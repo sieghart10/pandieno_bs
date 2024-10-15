@@ -1,0 +1,62 @@
+#sign-up {
+  font-size: 2rem;
+  padding: 2rem 0 0 2rem;
+  text-align: left;
+}
+
+.section {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+}
+
+#search-bar {
+  display: none;
+}
+
+section {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+}
+
+.left,
+.right {
+  width: 100%;
+  height: 100vh;
+}
+
+
+.right-container {
+  width: 80%;
+  height: 80vh;
+  margin: auto auto auto auto;
+  display: block;
+  justify-self: center;
+  background-color: var(--color7);
+}
+
+
+.log_in_btn {
+  background-color: var(--color3); 
+  border: none;
+  color: white;
+  padding: 10px;
+  font-family: 'IM FELL English', serif;
+
+}
+
+form {
+  padding: 2rem;
+}
+
+:root {
+  --color1: #fac883;
+  --color2: #d9912b;
+  --color3: #966115;
+  --color4: #5b3701;
+  --color5: #573501;
+  --color6: #3d2501;
+  --color7: #492c00;
+  --color8: #231200;
+}

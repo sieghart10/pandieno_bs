@@ -1,0 +1,106 @@
+.book-detail {
+  display: flex;
+  gap: 2rem;
+  background-color: var(--color6);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.book-image img {
+  width: 200px;
+  height: auto;
+}
+
+.book-info h2 {
+  margin-top: 0;
+  color: var(--color1);
+}
+
+.author, .publish-date, .price {
+  font-style: italic;
+  color: var(--color2);
+}
+
+.description {
+  margin: 1rem 0;
+}
+
+.stock {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+#quantity {
+  width: 50px;
+  margin: 0 10px;
+}
+
+.buttons button {
+  background-color: var(--color3);
+  color: var(--color5);
+  padding: 10px 20px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+
+
+.ratings {
+  margin-top: 1rem;
+}
+
+.related-books {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
+  grid-gap: 1rem; 
+  justify-items: center; 
+  align-items: start; 
+}
+
+.book-item {
+  background-color: var(--color5);
+  padding: 1rem;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.book-item img {
+  width: 100px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.book-item p {
+  margin: 0;
+  color: var(--color1);
+}
+
+.bookstore-info {
+  background-color: var(--color7);
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.store-logo img {
+  width: 50px;
+  height: 50px;
+}
+
+.store-details h3 {
+  margin: 0;
+  color: var(--color1);
+}
+
+.store-details a.view-shop {
+  color: var(--color2);
+  text-decoration: none;
+}

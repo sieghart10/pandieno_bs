@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Home</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/shoppingcart.css" />
+    <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/main.css" />
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet"/><!--font IM Fell DW Pica SC-->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" /><!--font inter -->
+    <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet"><!--im fell eng-->
+    <script type="module" src="script.js"></script>
+  </head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <div class="left-nav">
+        <ul>
+          <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1727950923/edcd0988-0c42-466e-b5fd-76660fe9afeb_ktknm8-removebg-preview_mmikc5.png" alt="logo">
+          <h2>Pandieño Bookstore</h2>
+          <h3>|&nbsp Shooping Cart</h3>
+        </ul>
+      </div>
+      <div class="right-nav">
+          <ul>
+                <input type="text" placeholder="Search item..." class="search-bar">
+              <li class="cart">
+                <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
+                <span class="cart-count">0</span>
+            </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="product">
+        <div class="product-details">
+            <input type="checkbox" id="checkbox1" name="checkbox1">
+            <label for="checkbox1">Product</label>
+            <p class="unitiy">Unit Price</p>
+            <p class="quantity">Quantity</p>
+            <p class="totalprice">Total Price</p>
+            <p class="action">Action</p>
+        </div>
+    </section>
+    <section class="product">
+        <div class="shop-details">
+            <input type="checkbox" id="checkbox2" name="checkbox2">
+            <label for="checkbox2">Shop Name</label>
+        </div>
+    </section>
+  </main>
+  <section class="footer">
+    <div class="footer-details">
+      <input type="checkbox" id="checkbox3" name="checkbox3">
+      <label for="checkbox3">Select All</label>
+      <p class="delete">Delete all</p>
+      <p class="totalitems">Total (0 Item/s): ₱ 0</p>
+      <button class="checkout-btn">Check Out</button>
+    </div>
+  </section>
+  <footer>
+    <p>© 2024 Pandieño Bookstore. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>
