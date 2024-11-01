@@ -52,7 +52,7 @@ function displayForm() {
         <link rel="stylesheet" href="http://localhost:3000/css/signup.css" />
         <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
-        <script type="module" src="../script/script.js" defer></script>
+        <script type="module" src="http://localhost:3000/script/showPassword.js" defer></script>
     </head>
       <body>
         <nav>
