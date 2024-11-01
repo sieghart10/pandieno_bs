@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Password is correct, log in the user
         $_SESSION['user_id'] = $user['user_id']; // Store user ID in session
         $_SESSION['email'] = $user['email']; // Store email in session
-        $_SESSION['username'] = $username;
+        // $_SESSION['username'] = $username;
 
         // Update the user's status to active
         $sql_update_status = "UPDATE users SET status = 'active' WHERE user_id = :user_id";
@@ -58,9 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-
-
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -73,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet"><!--im fell eng-->
-    <script type="module" src="http://localhost:3000/script/showPassword.js" defer></script>
+    <script type="module" src="http://localhost:3000/scripts/showPassword.js" defer></script>
 </head>
     <body>
     <nav>
