@@ -1,0 +1,179 @@
+main{
+    padding: 2rem 2rem 2rem 2rem;
+    width: 100%;
+    max-width: 1920px;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    background-color: var(--color8);
+    /*justify-content: center;*/
+}
+
+h2{
+  text-align: center;
+}
+
+
+.inventory-section {
+    padding: 10px 10px; 
+    width: 100%; 
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .inventory-section table {
+    border-collapse: collapse;
+    table-layout:initial; 
+    width:70%;
+  }
+  
+  .inventory-section th, .inventory-section td {
+    border: 1px solid var(--color4);
+    text-align: left;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+        Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    vertical-align: middle; /* Center vertically */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: var(--color6);
+  }
+  
+  .inventory-section tr {
+    height:80px;
+  }
+  
+  
+  .inventory-section th {
+    background-color: var(--color4);
+    font-weight: 600;
+    color: var(--color1);
+    padding: 8px 10px;
+    font-size: larger;
+    
+  }
+
+  .inventory-section td{
+    text-align: center;
+
+  }
+
+  
+/* Image styling */
+.inventory-section img {
+    height: 150px;
+    width: auto;
+  }
+    
+  .main-content {
+    margin-left: 220px;
+    padding: 20px;
+  }
+  
+  .main-content h2 {
+    font-family: 'IM FELL English', serif;
+  }
+
+  button {
+    display: inline-block;
+    padding: 6px 6px;
+    color: var(--color2);
+    background-color: var(--color4);
+    text-decoration: none;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+    border: none;
+    font-size: small;
+    align-items: center;
+  }
+  
+  
+  .delete_button:hover {
+    background-color: #d23c3c; 
+    color: white;
+  }
+  
+  .edit_button:hover{
+    background-color: var(--color3);
+    color: white;
+  }
+  
+  .add_button:hover{
+    background-color: var(--color3);
+    color: white;
+  }
+
+  input{
+    background-color: none;
+    width:80%;
+    padding:5px;
+  }
+
+  table{
+    margin:0 auto;
+  }
+
+  textarea{
+    width:80%;
+    padding: 3rem 0 3rem 0;
+
+  }
+
+  .book-input {
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .choose-file-container {
+    display: flex;
+    align-items: center;
+    padding-left: 10%;
+  }
+
+  .choose-file{
+    padding: 0;
+    width: fit-content;
+    gap:90px;
+  }
+
+  .form-buttons {
+    text-align:right;
+    margin-top: 20px;
+    margin-right: 15%;
+}
+
+.form-buttons button,
+.form-buttons .cancel-button {
+    margin-left: 10px;
+    flex-direction: row;
+}
+
+.form-buttons button{
+  padding: 10px;
+  font-size: large;
+}
+
+.form-buttons button:hover{
+  background-color: var(--color3);
+  color: white;
+}
+
+.form-buttons .cancel-button{
+  color: var(--color3);
+}
+
+
+
+
+
+
+  
+  
+
+
+  
+
+

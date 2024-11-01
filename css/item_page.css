@@ -1,0 +1,153 @@
+main {
+  width: 100%;
+  max-width: 1920px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  background-color: var(--color8);
+}
+
+
+.book-detail {
+  display: flex;
+  gap: 2rem;
+  background-color: var(--color6);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.book-image img {
+  width: 250px;
+  height: auto;
+}
+
+.book-info h2 {
+  margin-top: 0;
+  color: var(--color1);
+}
+
+.author, .publish-date, .price {
+  font-style: italic;
+  color: var(--color2);
+}
+
+.description {
+  margin: 1rem 0;
+}
+
+.stock {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+#quantity {
+  width: 50px;
+  margin: 0 10px;
+}
+
+.buttons button {
+  background-color: var(--color3);
+  color: white;
+  padding: 10px 20px;
+  margin-top: 20px;
+  margin-right: 10px;
+  cursor: pointer;
+  border-color: var(--color3);
+}
+
+
+
+.ratings {
+  margin-top: 1rem;
+}
+
+.related-books {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+
+.book-container {
+  /* display: grid;
+   grid-template-columns: repeat(4, 1fr); 
+   grid-auto-rows: auto; 
+   justify-items: center; /* Horizontally centers the items */
+   /*align-items: center; /* Vertically centers the items */
+   display: grid;
+   grid-template-columns: repeat(4, 1fr); 
+   grid-auto-rows: auto; 
+   justify-items: center; /* Horizontally centers the items */
+   align-items: center; /* Vertically centers the items */
+   margin-left: 2rem;
+   margin-right: 2rem;
+ }
+
+
+.book-item {
+  margin-bottom: 2rem;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  background-color: var(--color3);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.book-item img {
+  width: 250px;
+  height:280px;
+  margin-bottom: 10px;
+
+}
+
+.book-item p {
+  padding-bottom: 8px;
+  color: var(--color1);
+  font-size: 15px;
+}
+
+.book-item:hover{
+  box-shadow: 0 0 10px 6px var(--color3);
+  transition: box-shadow 0.1s ease;
+}
+
+
+.bookstore-info {
+  background-color: var(--color7);
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.store-logo img {
+  width: 50px;
+  height: 50px;
+}
+
+.other-books h3,
+.related-books h3{
+  padding: 10px;
+  font-size: 30px;
+  font-weight: lighter;
+  text-align: center;
+  margin-bottom: 2rem;
+  margin-top: none;
+  font-family:'IM Fell DW Pica SC', serif;
+
+}
+
+.store-details h3 {
+  margin: 0;
+  color: var(--color2);
+  font-family: 'IM Fell DW Pica SC', serif;
+  font-weight: lighter;
+  font-size: 20px;
+}
+
+.store-details a.view-shop {
+  color: var(--color2);
+  text-decoration: none;
+  font-size: 15px;
+}
