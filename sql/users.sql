@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 01, 2024 at 08:24 AM
+-- Generation Time: Nov 02, 2024 at 12:57 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -36,23 +36,19 @@ CREATE TABLE `users` (
   `middle_name` varchar(100) DEFAULT NULL,
   `last_name` varchar(100) NOT NULL,
   `gender` enum('male','female','other') NOT NULL,
-  `barangay` varchar(100) NOT NULL,
-  `house_no` varchar(100) NOT NULL,
-  `street` varchar(100) NOT NULL,
-  `province` enum('Bulacan') NOT NULL,
-  `city` enum('Pandi') NOT NULL,
   `birthday` date DEFAULT NULL,
   `cart_id` int(11) DEFAULT NULL,
   `status` enum('active','inactive') DEFAULT 'inactive',
-  `date_created` timestamp NOT NULL DEFAULT current_timestamp()
+  `date_created` timestamp NOT NULL DEFAULT current_timestamp(),
+  `address_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `first_name`, `middle_name`, `last_name`, `gender`, `barangay`, `house_no`, `street`, `province`, `city`, `birthday`, `cart_id`, `status`, `date_created`) VALUES
-(3, 'izyne123', '$2y$10$2rD2CEw31T.nZNYg3xr/8.pceZJGlOUFAJ2iYN0vGBj/aKBerPen6', 'izynehowiegallardo@gmail.com', 'Izyne', 'Sernicula', 'Gallardo', 'male', 'Bunsuran 1', '425', 'Tanguile St.', 'Bulacan', 'Pandi', '2003-06-10', 3, 'inactive', '2024-10-31 13:13:29');
+INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `first_name`, `middle_name`, `last_name`, `gender`, `birthday`, `cart_id`, `status`, `date_created`, `address_id`) VALUES
+(1, 'Izyne123', '$2y$10$kxJRSdk60d6JDgHSa9dP/OAKD1KBPpplHb6ZGjPAN9IwrAvwC9xtu', 'izynehowiegallardo@gmail.com', 'Izyne', 'Sernicula', 'Gallardo', 'male', '2003-06-10', 1, 'active', '2024-11-02 10:14:23', 1);
 
 --
 -- Indexes for dumped tables
@@ -63,7 +59,10 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `first_name`, `
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
-  ADD KEY `fk_cart_id` (`cart_id`);
+  ADD UNIQUE KEY `username` (`username`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `fk_cart_id` (`cart_id`),
+  ADD KEY `fk_address_id` (`address_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -73,7 +72,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
@@ -83,6 +82,7 @@ ALTER TABLE `users`
 -- Constraints for table `users`
 --
 ALTER TABLE `users`
+  ADD CONSTRAINT `fk_address_id` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`address_id`),
   ADD CONSTRAINT `fk_cart_id` FOREIGN KEY (`cart_id`) REFERENCES `carts` (`cart_id`) ON DELETE SET NULL;
 COMMIT;
 

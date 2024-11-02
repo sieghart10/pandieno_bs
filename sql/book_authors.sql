@@ -24,16 +24,12 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `reviews`
+-- Table structure for table `book_authors`
 --
 
-CREATE TABLE `reviews` (
-  `review_id` int(11) NOT NULL,
+CREATE TABLE `book_authors` (
   `book_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `review_text` varchar(500) DEFAULT NULL,
-  `rating` decimal(3,2) NOT NULL CHECK (`rating` >= 0 and `rating` <= 5),
-  `review_date` datetime DEFAULT current_timestamp()
+  `author_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -41,33 +37,22 @@ CREATE TABLE `reviews` (
 --
 
 --
--- Indexes for table `reviews`
+-- Indexes for table `book_authors`
 --
-ALTER TABLE `reviews`
-  ADD PRIMARY KEY (`review_id`),
-  ADD KEY `book_id` (`book_id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `reviews`
---
-ALTER TABLE `reviews`
-  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `book_authors`
+  ADD PRIMARY KEY (`book_id`,`author_id`),
+  ADD KEY `author_id` (`author_id`);
 
 --
 -- Constraints for dumped tables
 --
 
 --
--- Constraints for table `reviews`
+-- Constraints for table `book_authors`
 --
-ALTER TABLE `reviews`
-  ADD CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`book_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `reviews_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+ALTER TABLE `book_authors`
+  ADD CONSTRAINT `book_authors_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`book_id`),
+  ADD CONSTRAINT `book_authors_ibfk_2` FOREIGN KEY (`author_id`) REFERENCES `authors` (`author_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

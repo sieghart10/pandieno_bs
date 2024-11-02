@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 01, 2024 at 08:24 AM
+-- Generation Time: Nov 02, 2024 at 12:58 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -33,13 +33,10 @@ CREATE TABLE `user_orders` (
   `user_id` int(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `quantity` int(11) NOT NULL,
-  `title` varchar(100) NOT NULL,
-  `address` varchar(255) NOT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `first_name` varchar(100) NOT NULL,
-  `last_name` varchar(100) NOT NULL,
   `payment_method` enum('cash_on_delivery') NOT NULL,
-  `order_status` enum('pending','completed','cancelled') DEFAULT 'pending'
+  `order_status` enum('pending','completed','cancelled') DEFAULT 'pending',
+  `address_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -52,7 +49,8 @@ CREATE TABLE `user_orders` (
 ALTER TABLE `user_orders`
   ADD PRIMARY KEY (`order_id`),
   ADD KEY `user_orders_ibfk_1` (`user_id`),
-  ADD KEY `user_orders_ibfk_2` (`book_id`);
+  ADD KEY `user_orders_ibfk_2` (`book_id`),
+  ADD KEY `fk_order_address_id` (`address_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -63,6 +61,18 @@ ALTER TABLE `user_orders`
 --
 ALTER TABLE `user_orders`
   MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `user_orders`
+--
+ALTER TABLE `user_orders`
+  ADD CONSTRAINT `fk_order_address_id` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`address_id`),
+  ADD CONSTRAINT `fk_order_book_id` FOREIGN KEY (`book_id`) REFERENCES `books` (`book_id`),
+  ADD CONSTRAINT `fk_order_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

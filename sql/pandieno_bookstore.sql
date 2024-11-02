@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 02, 2024 at 12:57 PM
+-- Generation Time: Nov 02, 2024 at 12:58 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,59 @@ SET time_zone = "+00:00";
 --
 -- Database: `pandieno_bookstore`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `addresses`
+--
+
+CREATE TABLE `addresses` (
+  `address_id` int(11) NOT NULL,
+  `barangay` varchar(100) NOT NULL,
+  `house_no` varchar(100) NOT NULL,
+  `street` varchar(100) NOT NULL,
+  `province` enum('Bulacan') NOT NULL,
+  `city` enum('Pandi') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `addresses`
+--
+
+INSERT INTO `addresses` (`address_id`, `barangay`, `house_no`, `street`, `province`, `city`) VALUES
+(1, 'Bunsuran 1', '425', 'Tanguile St.', 'Bulacan', 'Pandi');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admins`
+--
+
+CREATE TABLE `admins` (
+  `id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admins`
+--
+
+INSERT INTO `admins` (`id`, `username`, `password`, `created_at`) VALUES
+(1, 'admin', 'admin', '2024-11-01 06:56:16');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `authors`
+--
+
+CREATE TABLE `authors` (
+  `author_id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -61,9 +114,134 @@ INSERT INTO `books` (`book_id`, `title`, `category`, `author`, `isbn`, `price`, 
 (10, 'Whistle in the Dark', 'mystery', 'Emma Healey', '978-9-87-654321-0', 410.50, 30, 'https://res.cloudinary.com/izynegallardo/image/upload/v1730443580/pandieno_bookstore/cover_images/book_10_1730443577.jpg', 'In \"Whistle in the Dark,\" a woman returns to her hometown to confront the shadows of her past, only to find herself embroiled in a mysterious disappearance that has haunted the community for years. As she pieces together clues from her own childhood and interviews the townspeople, she uncovers hidden truths that challenge her understanding of loyalty and betrayal. In a gripping narrative filled with suspense, she must decide how far she’s willing to go to uncover the truth and protect those she loves.', 'Mystery, Suspense, Disappearance, Hometown, Childhood, Clues, Investigation, Loyalty, Betrayal, Truth, Woman, Forest, Night, Lantern', '2023-09-25', 8, 0.00, 75.00),
 (21, 'Laughs on the Run', 'comedy', 'Jamie Baxter', '978-1-23456-789-0', 230.00, 100, 'https://res.cloudinary.com/izynegallardo/image/upload/v1730441002/pandieno_bookstore/cover_images/vrbfdwypdrjlxvv2yryq.jpg', 'In a world where the mundane meets the absurd, \"Laughs on the Run\" takes readers on a rollicking adventure with Charlie, an average guy whose life is turned upside down when he accidentally becomes a viral sensation. Join Charlie as he navigates a series of hilarious misadventures, from accidentally crashing a celebrity wedding to finding himself in a high-stakes chase involving a runaway llama. With witty dialogue and an unforgettable cast of quirky characters, this comedy will have you in stitches from start to finish.', 'Comedy, Humor, Adventure, Viral Sensation, Quirky Characters', '2004-05-15', 0, NULL, 0.00);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `book_authors`
+--
+
+CREATE TABLE `book_authors` (
+  `book_id` int(11) NOT NULL,
+  `author_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `carts`
+--
+
+CREATE TABLE `carts` (
+  `cart_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `carts`
+--
+
+INSERT INTO `carts` (`cart_id`, `user_id`, `created_at`, `updated_at`) VALUES
+(1, 1, '2024-11-02 10:14:23', '2024-11-02 10:14:23');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cart_items`
+--
+
+CREATE TABLE `cart_items` (
+  `cart_item_id` int(11) NOT NULL,
+  `cart_id` int(11) NOT NULL,
+  `book_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reviews`
+--
+
+CREATE TABLE `reviews` (
+  `review_id` int(11) NOT NULL,
+  `book_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `review_text` varchar(500) DEFAULT NULL,
+  `rating` decimal(3,2) NOT NULL CHECK (`rating` >= 0 and `rating` <= 5),
+  `review_date` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `user_id` int(11) NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `first_name` varchar(100) NOT NULL,
+  `middle_name` varchar(100) DEFAULT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `gender` enum('male','female','other') NOT NULL,
+  `birthday` date DEFAULT NULL,
+  `cart_id` int(11) DEFAULT NULL,
+  `status` enum('active','inactive') DEFAULT 'inactive',
+  `date_created` timestamp NOT NULL DEFAULT current_timestamp(),
+  `address_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `first_name`, `middle_name`, `last_name`, `gender`, `birthday`, `cart_id`, `status`, `date_created`, `address_id`) VALUES
+(1, 'Izyne123', '$2y$10$kxJRSdk60d6JDgHSa9dP/OAKD1KBPpplHb6ZGjPAN9IwrAvwC9xtu', 'izynehowiegallardo@gmail.com', 'Izyne', 'Sernicula', 'Gallardo', 'male', '2003-06-10', 1, 'active', '2024-11-02 10:14:23', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_orders`
+--
+
+CREATE TABLE `user_orders` (
+  `order_id` int(11) NOT NULL,
+  `book_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `payment_method` enum('cash_on_delivery') NOT NULL,
+  `order_status` enum('pending','completed','cancelled') DEFAULT 'pending',
+  `address_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `addresses`
+--
+ALTER TABLE `addresses`
+  ADD PRIMARY KEY (`address_id`);
+
+--
+-- Indexes for table `admins`
+--
+ALTER TABLE `admins`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`);
+
+--
+-- Indexes for table `authors`
+--
+ALTER TABLE `authors`
+  ADD PRIMARY KEY (`author_id`);
 
 --
 -- Indexes for table `books`
@@ -73,14 +251,157 @@ ALTER TABLE `books`
   ADD UNIQUE KEY `isbn` (`isbn`);
 
 --
+-- Indexes for table `book_authors`
+--
+ALTER TABLE `book_authors`
+  ADD PRIMARY KEY (`book_id`,`author_id`),
+  ADD KEY `author_id` (`author_id`);
+
+--
+-- Indexes for table `carts`
+--
+ALTER TABLE `carts`
+  ADD PRIMARY KEY (`cart_id`),
+  ADD KEY `carts_ibfk_1` (`user_id`);
+
+--
+-- Indexes for table `cart_items`
+--
+ALTER TABLE `cart_items`
+  ADD PRIMARY KEY (`cart_item_id`),
+  ADD KEY `cart_id` (`cart_id`),
+  ADD KEY `book_id` (`book_id`);
+
+--
+-- Indexes for table `reviews`
+--
+ALTER TABLE `reviews`
+  ADD PRIMARY KEY (`review_id`),
+  ADD KEY `book_id` (`book_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`user_id`),
+  ADD UNIQUE KEY `username` (`username`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `fk_cart_id` (`cart_id`),
+  ADD KEY `fk_address_id` (`address_id`);
+
+--
+-- Indexes for table `user_orders`
+--
+ALTER TABLE `user_orders`
+  ADD PRIMARY KEY (`order_id`),
+  ADD KEY `user_orders_ibfk_1` (`user_id`),
+  ADD KEY `user_orders_ibfk_2` (`book_id`),
+  ADD KEY `fk_order_address_id` (`address_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `addresses`
+--
+ALTER TABLE `addresses`
+  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `admins`
+--
+ALTER TABLE `admins`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `authors`
+--
+ALTER TABLE `authors`
+  MODIFY `author_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
   MODIFY `book_id` int(30) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `carts`
+--
+ALTER TABLE `carts`
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `cart_items`
+--
+ALTER TABLE `cart_items`
+  MODIFY `cart_item_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `reviews`
+--
+ALTER TABLE `reviews`
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `user_orders`
+--
+ALTER TABLE `user_orders`
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `book_authors`
+--
+ALTER TABLE `book_authors`
+  ADD CONSTRAINT `book_authors_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`book_id`),
+  ADD CONSTRAINT `book_authors_ibfk_2` FOREIGN KEY (`author_id`) REFERENCES `authors` (`author_id`);
+
+--
+-- Constraints for table `carts`
+--
+ALTER TABLE `carts`
+  ADD CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `cart_items`
+--
+ALTER TABLE `cart_items`
+  ADD CONSTRAINT `cart_items_ibfk_1` FOREIGN KEY (`cart_id`) REFERENCES `carts` (`cart_id`),
+  ADD CONSTRAINT `cart_items_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `books` (`book_id`);
+
+--
+-- Constraints for table `reviews`
+--
+ALTER TABLE `reviews`
+  ADD CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`book_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `reviews_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `fk_address_id` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`address_id`),
+  ADD CONSTRAINT `fk_cart_id` FOREIGN KEY (`cart_id`) REFERENCES `carts` (`cart_id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `user_orders`
+--
+ALTER TABLE `user_orders`
+  ADD CONSTRAINT `fk_order_address_id` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`address_id`),
+  ADD CONSTRAINT `fk_order_book_id` FOREIGN KEY (`book_id`) REFERENCES `books` (`book_id`),
+  ADD CONSTRAINT `fk_order_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
