@@ -1,104 +1,96 @@
 <?php
-session_start(); // Start the session
+session_start();
 
 include '../db.php';
 
-// Initialize variables
-$email = '';
+$email = $_SESSION['email'] ?? '';
+$password = $_SESSION['password'] ?? null;
 
-// Check if the session variable is set
-if (isset($_SESSION['email'])) {
-    $email = $_SESSION['email'];
+if (!$email || !$password) {
+    echo "Error: Email or password is missing from the session.";
+    exit();
 }
 
-// Check if the form has been submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get and sanitize the user input from the form
-    $username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
-    $first_name = filter_var($_POST['first-name'], FILTER_SANITIZE_STRING);
-    $middle_name = isset($_POST['middle-name']) ? filter_var($_POST['middle-name'], FILTER_SANITIZE_STRING) : NULL;
-    $last_name = filter_var($_POST['last-name'], FILTER_SANITIZE_STRING);
-    $gender = filter_var($_POST['gender'], FILTER_SANITIZE_STRING);
-    $barangay = filter_var($_POST['barangay'], FILTER_SANITIZE_STRING);
-    $house_no = filter_var($_POST['house_no'], FILTER_SANITIZE_STRING);
-    $street = filter_var($_POST['street'], FILTER_SANITIZE_STRING);
-    $city = filter_var($_POST['city'], FILTER_SANITIZE_STRING);
-    $province = filter_var($_POST['province'], FILTER_SANITIZE_STRING);
-    $birthday = $_POST['birthday'];
+$hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // Validate and sanitize birthday input
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = htmlspecialchars($_POST['username']);
+    $first_name = htmlspecialchars($_POST['first-name']);
+    $middle_name = !empty($_POST['middle-name']) ? htmlspecialchars($_POST['middle-name']) : null;
+    $last_name = htmlspecialchars($_POST['last-name']);
+    $gender = htmlspecialchars($_POST['gender']);
+    $barangay = htmlspecialchars($_POST['barangay']);
+    $house_no = htmlspecialchars($_POST['house_no']);
+    $street = htmlspecialchars($_POST['street']);
+    $city = htmlspecialchars($_POST['city']);
+    $province = htmlspecialchars($_POST['province']);
+
+    $birthday = $_POST['birthday'];
     $date_format = 'Y-m-d';
     $d = DateTime::createFromFormat($date_format, $birthday);
-    if ($d && $d->format($date_format) === $birthday) {
-        $birthday = $d->format($date_format);
-    } else {
-        // Handle invalid date format if necessary
-        $birthday = null;
-    }
+    $birthday = ($d && $d->format($date_format) === $birthday) ? $birthday : null;
 
-    // Check if password is set in session before using it
-    $password = isset($_SESSION['password']) ? $_SESSION['password'] : null;
-    $hashed_password = $password ? password_hash($password, PASSWORD_DEFAULT) : null;
+    try {
+        $pdo->beginTransaction();
 
-    // Step 2: Insert the data into the user table
-    $sql = "INSERT INTO users (username, first_name, middle_name, last_name, email, password, barangay, house_no, street, city, province, birthday, gender, status, date_created)
-            VALUES (:username, :first_name, :middle_name, :last_name, :email, :password, :barangay, :house_no, :street, :city, :province, :birthday, :gender, 'active', current_timestamp())";
+        // Insert into addresses table
+        $address_sql = "INSERT INTO addresses (barangay, house_no, street, city, province)
+                        VALUES (:barangay, :house_no, :street, :city, :province)";
+        $address_stmt = $pdo->prepare($address_sql);
+        $address_stmt->execute([
+            ':barangay' => $barangay,
+            ':house_no' => $house_no,
+            ':street' => $street,
+            ':city' => $city,
+            ':province' => $province
+        ]);
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':username', $username);
-    $stmt->bindParam(':first_name', $first_name);
-    $stmt->bindParam(':middle_name', $middle_name);
-    $stmt->bindParam(':last_name', $last_name);
-    $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':password', $hashed_password);
-    $stmt->bindParam(':gender', $gender);
-    $stmt->bindParam(':barangay', $barangay);
-    $stmt->bindParam(':house_no', $house_no);
-    $stmt->bindParam(':street', $street);
-    $stmt->bindParam(':city', $city);
-    $stmt->bindParam(':province', $province);
-    $stmt->bindParam(':birthday', $birthday);
+        $address_id = $pdo->lastInsertId();
 
-    // Execute the user insertion
-    if ($stmt->execute()) {
-        $_SESSION['user_id'] = $pdo->lastInsertId(); // Store user ID in session
-        $_SESSION['username'] = $username; // Store username in session
+        // Insert into users table
+        $user_sql = "INSERT INTO users (username, first_name, middle_name, last_name, email, password, birthday, gender, status, date_created, address_id)
+                     VALUES (:username, :first_name, :middle_name, :last_name, :email, :password, :birthday, :gender, 'active', current_timestamp(), :address_id)";
+        
+        $user_stmt = $pdo->prepare($user_sql);
+        $user_stmt->execute([
+            ':username' => $username,
+            ':first_name' => $first_name,
+            ':middle_name' => $middle_name,
+            ':last_name' => $last_name,
+            ':email' => $email,
+            ':password' => $hashed_password,
+            ':birthday' => $birthday,
+            ':gender' => $gender,
+            ':address_id' => $address_id
+        ]);
 
-        // Step 1: Insert a new cart entry for the user
+        $_SESSION['user_id'] = $pdo->lastInsertId(); 
+        $_SESSION['username'] = $username;
+
+        // Create a cart entry for the user
         $cart_sql = "INSERT INTO carts (user_id) VALUES (:user_id)";
         $cart_stmt = $pdo->prepare($cart_sql);
-        $cart_stmt->bindParam(':user_id', $_SESSION['user_id']);
+        $cart_stmt->execute([':user_id' => $_SESSION['user_id']]);
 
-        // Execute cart insertion
-        if ($cart_stmt->execute()) {
-            $cart_id = $pdo->lastInsertId(); // Get the newly created cart ID
-            
-            // Update the user's cart_id    
-            $update_user_sql = "UPDATE users SET cart_id = :cart_id WHERE user_id = :user_id";
-            $update_user_stmt = $pdo->prepare($update_user_sql);
-            $update_user_stmt->bindParam(':cart_id', $cart_id);
-            $update_user_stmt->bindParam(':user_id', $_SESSION['user_id']);
+        $cart_id = $pdo->lastInsertId();
+        $update_user_sql = "UPDATE users SET cart_id = :cart_id WHERE user_id = :user_id";
+        $update_user_stmt = $pdo->prepare($update_user_sql);
+        $update_user_stmt->execute([
+            ':cart_id' => $cart_id,
+            ':user_id' => $_SESSION['user_id']
+        ]);
 
-            // Execute user update
-            if ($update_user_stmt->execute()) {
-                // Redirect to the item selection page after successful signup
-                header("Location: http://localhost:3000/index.php");
-                exit();  
-            } else {
-                echo "Error updating user cart ID: " . $update_user_stmt->errorInfo()[2];
-                exit(); // Stop further execution if cart creation fails
-            }
-        } else {
-            echo "Error creating cart: " . $cart_stmt->errorInfo()[2];
-            exit(); // Stop further execution if cart creation fails
-        }
-    } else {
-        echo "Error: " . $stmt->errorInfo()[2];
+        $pdo->commit();
+
+        header("Location: http://localhost:3000/index.php");
+        exit();
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        echo "Error: " . $e->getMessage();
+        exit();
     }
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -112,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet"><!--im fell eng-->
     <link rel="stylesheet" href="http://localhost:3000/css/main.css"/>
     <link rel="stylesheet" href="http://localhost:3000/css/usersignup.css"/>
-    <script type="module" src="http://localhost:3000/script/script.js"></script>
+    <script type="module" src="http://localhost:3000/scripts/showPassword.js" defer></script>
 </head>
     <body>
         <nav>
