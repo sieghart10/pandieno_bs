@@ -72,8 +72,12 @@ if (isset($_SESSION['user_id'])) {
                         </form>
                     </li>
                     <li class="cart">
-                        <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
-                        <span class="cart-count">2</span>
+                        <a href="http://localhost:3000/php/shoppingcart.php">
+                            <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
+                            <span class="cart-count">2</span>
+                        </a>
+                    </li>
+                    <li>
                         <?php if (!isset($_SESSION['user_id'])): // Check if user is logged out ?>
                             <a href="http://localhost:3000/php/login.php">Log in</a> | <a href="http://localhost:3000/php/signup.php">Sign up</a>
                         <?php else: ?>
