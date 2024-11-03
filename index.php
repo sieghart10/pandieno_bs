@@ -1,3 +1,4 @@
+ <!-- index.php -->
 <?php
 session_start();
 include 'db.php';
@@ -31,6 +32,20 @@ if (isset($_SESSION['user_id'])) {
     $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
     $stmt->execute();
     $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+$cartItemCount = 0;
+if ($currentUser) {
+    $stmt = $pdo->prepare("
+        SELECT SUM(quantity) AS total_items 
+        FROM cart_items 
+        JOIN carts ON cart_items.cart_id = carts.cart_id 
+        WHERE carts.user_id = :user_id
+    ");
+    $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $cartItemCount = $result['total_items'] ?? 0;
 }
 ?>
 
@@ -72,10 +87,18 @@ if (isset($_SESSION['user_id'])) {
                         </form>
                     </li>
                     <li class="cart">
-                        <a href="http://localhost:3000/php/shoppingcart.php">
-                            <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
-                            <span class="cart-count">2</span>
-                        </a>
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <a href="http://localhost:3000/php/shoppingcart.php">
+                                <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
+                                <?php if ($cartItemCount > 0): ?>
+                                    <span class="cart-count"><?php echo $cartItemCount; ?></span>
+                                <?php endif; ?>
+                            </a>
+                        <?php else: ?>
+                            <a href="http://localhost:3000/php/login.php">
+                                <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
+                            </a>
+                        <?php endif; ?>
                     </li>
                     <li>
                         <?php if (!isset($_SESSION['user_id'])): // Check if user is logged out ?>
@@ -83,7 +106,7 @@ if (isset($_SESSION['user_id'])) {
                         <?php else: ?>
                             <span><?php echo htmlspecialchars($currentUser['username']); ?></span>
                             <a href="http://localhost:3000/php/profile.php">
-                                <img src="path_to_profile_icon.png" alt="Profile" style="width: 20px; height: 20px;">.
+                                <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728921898/profile_evrssf.png" alt="Profile" style="width: 20px; height: 20px;">
                             </a>
                         <?php endif; ?>
                     </li>

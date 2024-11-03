@@ -64,66 +64,18 @@ if (isset($_GET['book_id'])) {
     exit;
 }
 
-// Handle form submission to update the book
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $book_id = intval($_POST['book_id']);
-    $title = $_POST['title'];
-    $category = $_POST['category'];
-    $author = $_POST['author'];
-    $isbn = $_POST['isbn'];
-    $price = floatval($_POST['price']);
-    $quantity = intval($_POST['quantity']);
-    $description = $_POST['description'];
-    $keywords = $_POST['keywords'];
-    $publish_date = $_POST['publish_date'];
-
-    // Get the current cover image from the database
-    $stmt = $pdo->prepare("SELECT cover_image FROM books WHERE book_id = :book_id");
-    $stmt->bindParam(':book_id', $book_id);
+$cartItemCount = 0;
+if ($currentUser) {
+    $stmt = $pdo->prepare("
+        SELECT SUM(quantity) AS total_items 
+        FROM cart_items 
+        JOIN carts ON cart_items.cart_id = carts.cart_id 
+        WHERE carts.user_id = :user_id
+    ");
+    $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
     $stmt->execute();
-    $current_book = $stmt->fetch(PDO::FETCH_ASSOC);
-    $cover_image = $current_book['cover_image']; // Default to current image path
-
-    // Handle the image upload
-    if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-        try {
-            // Create a unique public_id using the book ID and current timestamp
-            $timestamp = time();
-            $public_id = 'book_' . $book_id . '_' . $timestamp; // Unique public_id
-    
-            // Upload the file to Cloudinary
-            $uploadedFile = $cloudinary->uploadApi()->upload($_FILES['cover_image']['tmp_name'], [
-                'folder' => 'pandieno_bookstore/cover_images', // Set a folder path in Cloudinary
-                'public_id' => $public_id, // Set the unique identifier
-                'overwrite' => true,
-                'resource_type' => 'image'
-            ]);
-    
-            // Update the cover image path to Cloudinary's URL
-            $cover_image = $uploadedFile['secure_url'];
-        } catch (Exception $e) {
-            echo 'Image upload failed: ', $e->getMessage();
-            exit();
-        }
-    }
-
-    // Update the book details
-    $stmt = $pdo->prepare("UPDATE books SET title = :title, category = :category, author = :author, isbn = :isbn, price = :price, quantity = :quantity, description = :description, keywords = :keywords, publish_date = :publish_date, cover_image = :cover_image WHERE book_id = :book_id");
-    $stmt->bindParam(':title', $title);
-    $stmt->bindParam(':category', $category);
-    $stmt->bindParam(':author', $author);
-    $stmt->bindParam(':isbn', $isbn);
-    $stmt->bindParam(':price', $price);
-    $stmt->bindParam(':quantity', $quantity);
-    $stmt->bindParam(':description', $description);
-    $stmt->bindParam(':keywords', $keywords);
-    $stmt->bindParam(':publish_date', $publish_date);
-    $stmt->bindParam(':cover_image', $cover_image); // Use the potentially updated cover image
-    $stmt->bindParam(':book_id', $book_id);
-    $stmt->execute();
-
-    header("Location: admin_dashboard.php");
-    exit();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $cartItemCount = $result['total_items'] ?? 0;
 }
 ?>
 
@@ -140,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet"><!--im fell eng-->
     <link rel="stylesheet" href="http://localhost:3000/css/main.css" />
     <link rel="stylesheet" href="http://localhost:3000/css/item_page.css" />
+    <script src="http://localhost:3000/scripts/addToCart.js" defer></script>
   </head>
   <body>
     <nav>
@@ -165,14 +118,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </form>
                     </li>
                     <li class="cart">
-                        <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
-                        <span class="cart-count">2</span>
+                        <a href="http://localhost:3000/php/shoppingcart.php">
+                            <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
+                            <?php if ($cartItemCount > 0): ?>
+                                <span class="cart-count"><?php echo $cartItemCount; ?></span>
+                            <?php endif; ?>
+                        </a>
+                    </li>
+                    <li>
                         <?php if (!isset($_SESSION['user_id'])): // Check if user is logged out ?>
                             <a href="http://localhost:3000/php/login.php">Log in</a> | <a href="http://localhost:3000/php/signup.php">Sign up</a>
                         <?php else: ?>
                             <span><?php echo htmlspecialchars($currentUser['username']); ?></span>
                             <a href="http://localhost:3000/php/profile.php">
-                                <img src="path_to_profile_icon.png" alt="Profile" style="width: 20px; height: 20px;">.
+                                <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728921898/profile_evrssf.png" alt="Profile" style="width: 20px; height: 20px;">
                             </a>
                         <?php endif; ?>
                     </li>
@@ -200,8 +159,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <span><?php echo htmlspecialchars($book['quantity']); ?> pieces available</span>
           </div>
           <div class="buttons">
-            <button>Add to Cart</button>
-            <a href="checkout.html"><button>Buy Now</button></a>
+            <button onclick="addToCart(<?php echo $book_id; ?>)">Add to Cart</button>
+            <a href="http://localhost:3000/php/checkout.php"><button>Buy Now</button></a>
           </div>
           <div class="ratings">
               <p>Ratings: <?php echo htmlspecialchars($averageRating); ?> / 5 ★</p>
@@ -222,6 +181,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <a href="http://localhost:3000/about.html" class="view-shop">View Shop</a>
         </div>
       </section>
+
+      <!-- Related Book Section -->
       <section class="related-books">
         <h3>Related Books</h3>
         <div class="book-container">
@@ -266,3 +227,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </footer>
   </body>
 </html>
+

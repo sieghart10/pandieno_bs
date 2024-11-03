@@ -1,3 +1,7 @@
+body {
+  overflow-y: hidden;
+}
+
 main {
   width: 100%;
   max-width: 1920px;
@@ -10,18 +14,25 @@ main {
   background-color: var(--color8);
 }
 
-.all-products, .product, .item-section {
-  align-items: center; 
+.all-products, .item-section {
   background-color: var(--color7); 
   padding: 10px;
   margin-bottom: 10px;
 }
 
-.product-details, .items {
+.product-details {
   display: flex; 
   align-items: center;
+  justify-content: space-between; /* Align header items evenly */
   gap: 10px; 
-  /* flex-grow: 1;  */
+}
+
+.items {
+  display: flex; 
+  align-items: center;
+  justify-content: space-between; /* Align cart items evenly */
+  gap: 10px; 
+  padding: 10px; /* Add padding for better spacing */
 }
 
 .item-price, .quantity-control, .item-totalprice, .item-action {
@@ -29,15 +40,16 @@ main {
   text-align: center; 
 }
 
+.quantity-control {
+  display: flex; 
+  align-items: center; 
+  justify-content: center; /* Center buttons and quantity display */
+}
+
 .quantity-control button {
     width: 30px;
     height: 23.6px;
     margin: 0 5px;
-}
-
-.quantity-control input {
-    width: 50px;
-    text-align: center;
 }
 
 .unit-price, .quantity, .totalprice, .action {
@@ -63,7 +75,7 @@ li {
   align-items: center;
 }
 
-.delete-all, .totalitems{
+.delete-all, .totalitems {
   flex: 1; 
   text-align: center; 
 }
@@ -80,6 +92,7 @@ li {
   display: flex;
   align-items: center;
 }
+
 .checkout-btn {
   padding: 10px 20px;
   background-color: var(--color3);
@@ -93,10 +106,6 @@ li {
   font-size: 16px;
   color: var(--color2);
 }
-
-/* foot .checkout-btn {
-  margin-left: auto;
-} */
 
 :root {
   --color1: #fac883;
