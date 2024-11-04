@@ -35,7 +35,18 @@ main {
   padding: 10px; /* Add padding for better spacing */
 }
 
-.item-price, .quantity-control, .item-totalprice, .item-action {
+.item-cover-title {
+  gap: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-action {
+  max-width: 22rem;
+}
+
+#checkbox-item, .item-cover-title, .item-price, .quantity-control, .item-totalprice, .item-action{
   flex: 1; 
   text-align: center; 
 }
@@ -52,7 +63,7 @@ main {
     margin: 0 5px;
 }
 
-.unit-price, .quantity, .totalprice, .action {
+.product, .unit-price, .quantity, .totalprice, .action {
   flex: 1; 
   text-align: center; 
 }

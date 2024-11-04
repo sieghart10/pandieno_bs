@@ -2,13 +2,29 @@
 session_start();
 include '../db.php';
 
+// Initialize current user and cart item count
 $currentUser = null;
+$cartItemCount = 0;
+
+// Check if user is logged in
 if (isset($_SESSION['user_id'])) {
-    // Query the database to get the user's data
+    // Query to fetch user data
     $stmt = $pdo->prepare("SELECT username, email FROM users WHERE user_id = :user_id");
     $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
     $stmt->execute();
     $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Get the cart item count
+    $stmt = $pdo->prepare("
+        SELECT SUM(quantity) AS total_items 
+        FROM cart_items 
+        JOIN carts ON cart_items.cart_id = carts.cart_id 
+        WHERE carts.user_id = :user_id
+    ");
+    $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $cartItemCount = $result['total_items'] ?? 0;
 }
 
 // Get the book_id from the URL
@@ -52,49 +68,31 @@ if (isset($_GET['book_id'])) {
         FROM books 
         WHERE (category != :category AND author != :author)
     ");
-    // LIMIT 8  -- Limit the number of other books shown
     $stmt_others->bindParam(':category', $book['category'], PDO::PARAM_STR);
     $stmt_others->bindParam(':author', $book['author'], PDO::PARAM_STR);
     $stmt_others->execute();
     $otherBooks = $stmt_others->fetchAll(PDO::FETCH_ASSOC);
-    
 } else {
     // Redirect back to index.php if no book_id is provided
-    header('Location: index.php');
+    header('Location: http://localhost:3000/index.php');
     exit;
-}
-
-$cartItemCount = 0;
-if ($currentUser) {
-    $stmt = $pdo->prepare("
-        SELECT SUM(quantity) AS total_items 
-        FROM cart_items 
-        JOIN carts ON cart_items.cart_id = carts.cart_id 
-        WHERE carts.user_id = :user_id
-    ");
-    $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
-    $stmt->execute();
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    $cartItemCount = $result['total_items'] ?? 0;
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <title><?php echo htmlspecialchars($book['title']); ?></title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728904749/logo_vccjhc.ico" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet" /><!--font IM Fell DW Pica SC-->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" /><!--font inter -->
-    <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet"><!--im fell eng-->
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="http://localhost:3000/css/main.css" />
     <link rel="stylesheet" href="http://localhost:3000/css/item_page.css" />
     <script src="http://localhost:3000/scripts/addToCart.js" defer></script>
-  </head>
-  <body>
+</head>
+<body>
     <nav>
         <div class="nav-container">
             <div class="left-nav">
@@ -120,13 +118,10 @@ if ($currentUser) {
                     <li class="cart">
                         <a href="http://localhost:3000/php/shoppingcart.php">
                             <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
-                            <?php if ($cartItemCount > 0): ?>
-                                <span class="cart-count"><?php echo $cartItemCount; ?></span>
-                            <?php endif; ?>
+                            <span class="cart-count" style="display: none;"></span> <!-- Initially hidden -->
                         </a>
                     </li>
-                    <li>
-                        <?php if (!isset($_SESSION['user_id'])): // Check if user is logged out ?>
+                        <?php if (!isset($_SESSION['user_id'])): ?>
                             <a href="http://localhost:3000/php/login.php">Log in</a> | <a href="http://localhost:3000/php/signup.php">Sign up</a>
                         <?php else: ?>
                             <span><?php echo htmlspecialchars($currentUser['username']); ?></span>
@@ -143,11 +138,9 @@ if ($currentUser) {
     <main>
       <section class="book-detail">
         <div class="book-image">
-          <!-- Display the book cover image -->
           <img src="<?php echo htmlspecialchars($book['cover_image']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>">
         </div>
         <div class="book-info">
-          <!-- Display the book title, author, and other details -->
           <h2><?php echo htmlspecialchars($book['title']); ?></h2>
           <p class="author">By <?php echo htmlspecialchars($book['author']); ?></p>
           <p class="publish-date">Publication Date: <?php echo htmlspecialchars($book['publish_date']); ?></p>
@@ -225,6 +218,5 @@ if ($currentUser) {
     <footer>
       <p>© 2024 Pandieño Bookstore. All Rights Reserved.</p>
     </footer>
-  </body>
+</body>
 </html>
-

@@ -10,6 +10,9 @@ if (isset($_SESSION['user_id'])) {
     $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
     $stmt->execute();
     $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
+} else {
+    header('Location: login.php');
+    exit;
 }
 
 $cartItems = [];
@@ -79,7 +82,7 @@ if ($currentUser) {
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet">
-    <script type="module" src="http://localhost:3000/scripts/quantity.js" defer></script>
+    <script src="http://localhost:3000/scripts/quantity.js" defer></script>
 </head>
 <body>
     <nav>
@@ -129,42 +132,47 @@ if ($currentUser) {
         </div>
     </nav>
 
+
     <main>
-        <section class="all-products">
-            <div class="product-details">
-                <input type="checkbox" id="checkbox-top" name="checkbox-top">
-                <label for="checkbox-top">Product</label>
-                <p class="unit-price">Unit Price</p>
-                <p class="quantity">Quantity</p>
-                <p class="totalprice">Total Price</p>
-                <p class="action">Action</p>
-            </div>
-        </section>
+    <section class="all-products">
+        <div class="product-details">
+            <p class="product">Product</p>
+            <p class="unit-price">Unit Price</p>
+            <p class="quantity">Quantity</p>
+            <p class="totalprice">Total Price</p>
+            <p class="action">Action</p>
+        </div>
+    </section>
+
+    <?php if (!empty($cartItems)): // Only show the item section if there are items ?>
         <section class="item-section">
-            <?php if (empty($cartItems)): ?>
+            <?php foreach ($cartItems as $item): ?>
+                <div class="items">
+                    <input type="checkbox" id="checkbox-item-<?php echo $item['cart_item_id']; ?>" class="item-select" name="checkbox-item">
+                    <div class="item-cover-title">
+                        <img src="<?php echo htmlspecialchars($item['cover_image']); ?>" alt="item-image" class="item-image">
+                        <p class="item-title"><?php echo htmlspecialchars($item['title']); ?></p>
+                    </div>
+                    <p class="item-price">₱<?php echo number_format($item['price'], 2); ?></p>
+                    <div class="quantity-control">
+                        <button class="decrease" onclick="decreaseQuantity('item-quantity-<?php echo $item['cart_item_id']; ?>')">-</button>
+                        <span id="item-quantity-<?php echo $item['cart_item_id']; ?>" class="item-quantity"><?php echo htmlspecialchars($item['quantity']); ?></span>
+                        <button class="increase" onclick="increaseQuantity('item-quantity-<?php echo $item['cart_item_id']; ?>')">+</button>
+                    </div>
+                    <p class="item-totalprice">₱<?php echo number_format($item['price'] * $item['quantity'], 2); ?></p>
+                    <button class="item-action" onclick="deleteItem(<?php echo $item['cart_item_id']; ?>)">Delete</button>
+                </div>
+            <?php endforeach; ?>
+        </section>
+        <?php else: // Show a message if the cart is empty ?>
+            <section class="item-section">
                 <?php if (isset($_GET['search'])): ?>
                     <p>No items found matching "<?php echo htmlspecialchars($_GET['search']); ?>" in your cart.</p>
                 <?php else: ?>
                     <p>Your cart is empty.</p>
                 <?php endif; ?>
-            <?php else: ?>
-                <?php foreach ($cartItems as $item): ?>
-                    <div class="items">
-                        <input type="checkbox" id="checkbox-item-<?php echo $item['cart_item_id']; ?>" class="item-select" name="checkbox-item">
-                        <img src="<?php echo htmlspecialchars($item['cover_image']); ?>" alt="item-image" class="item-image">
-                        <p class="item-title"><?php echo htmlspecialchars($item['title']); ?></p>
-                        <p class="item-price">₱<?php echo number_format($item['price'], 2); ?></p>
-                        <div class="quantity-control">
-                            <button class="decrease" onclick="decreaseQuantity('item-quantity-<?php echo $item['cart_item_id']; ?>')">-</button>
-                            <span id="item-quantity-<?php echo $item['cart_item_id']; ?>" class="item-quantity" data-max="<?php echo htmlspecialchars($item['quantity']); ?>"><?php echo htmlspecialchars($item['quantity']); ?></span>
-                            <button class="increase" onclick="increaseQuantity('item-quantity-<?php echo $item['cart_item_id']; ?>')">+</button>
-                        </div>
-                        <p class="item-totalprice">₱<?php echo number_format($item['price'] * $item['quantity'], 2); ?></p>
-                        <button class="item-action" onclick="deleteItem(<?php echo $item['cart_item_id']; ?>)">Delete</button>
-                    </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </section>
+            </section>
+        <?php endif; ?>
     </main>
 
     <footer>
@@ -172,8 +180,8 @@ if ($currentUser) {
             <div class="left-foot">
                 <ul>
                     <li>
-                        <input type="checkbox" id="checkbox-foot" name="checkbox-foot">
-                        <label for="checkbox-foot">Select All (<?php echo count($cartItems); ?>)</label>
+                        <input type="checkbox" id="checkbox-foot" name="checkbox-foot" class="select-all-checkbox" onclick="toggleSelectAll()">
+                        <label class="select-all" for="checkbox-foot">Select All (0)</label>
                     </li>
                     <li>
                         <button class="delete-all">Delete All</button>
@@ -183,13 +191,7 @@ if ($currentUser) {
             <div>
                 <ul>
                     <li>
-                        <p class="totalitems">Total (<?php echo count($cartItems); ?> Item/s): ₱ <?php 
-                            $totalAmount = 0;
-                            foreach ($cartItems as $item) {
-                                $totalAmount += $item['price'] * $item['quantity'];
-                            }
-                            echo number_format($totalAmount, 2);
-                        ?></p>
+                        <p class="totalitems">Total (0 Item/s): ₱ 0.00</p>
                         <button class="checkout-btn">Check Out</button>
                     </li>
                 </ul>

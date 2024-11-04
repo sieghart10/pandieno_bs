@@ -7,14 +7,25 @@ function fetchCartCount() {
         .then(data => {
             if (data.success) {
                 cartCount = parseInt(data.count, 10); // Convert to integer using parseInt
-                document.querySelector('.cart-count').textContent = cartCount; // Update the UI
+                updateCartCountDisplay(); // Update the display
             } else {
                 console.error('Failed to fetch cart count.');
+                updateCartCountDisplay(); // Ensure display updates even if fetching fails
             }
         })
         .catch(error => {
             console.error('Error fetching cart count:', error);
+            updateCartCountDisplay(); // Ensure display updates even if there's an error
         });
+}
+
+// Function to update the cart count display
+function updateCartCountDisplay() {
+    const cartCountElement = document.querySelector('.cart-count');
+    if (cartCountElement) {
+        cartCountElement.textContent = cartCount > 0 ? cartCount : ''; // Clear the text if cart is empty
+        cartCountElement.style.display = cartCount > 0 ? 'inline' : 'none'; // Show or hide the count
+    }
 }
 
 // Call fetchCartCount on page load
@@ -41,9 +52,8 @@ function addToCart(bookId) {
     })
     .then(data => {
         if (data.success) {
-            // alert(data.message);
             cartCount += parseInt(quantity); // Increment cart count by the quantity added
-            document.querySelector('.cart-count').textContent = cartCount; // Update the cart count in the UI
+            updateCartCountDisplay(); // Update the cart count in the UI
         } else {
             alert(data.message);
         }
