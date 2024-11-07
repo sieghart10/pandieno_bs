@@ -83,6 +83,7 @@ if ($currentUser) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet">
     <script src="http://localhost:3000/scripts/quantity.js" defer></script>
+    <script src="http://localhost:3000/scripts/checkout.js" defer></script>
 </head>
 <body>
     <nav>
@@ -162,6 +163,7 @@ if ($currentUser) {
                     <p class="item-totalprice">₱<?php echo number_format($item['price'] * $item['quantity'], 2); ?></p>
                     <button class="item-action" onclick="deleteItem(<?php echo $item['cart_item_id']; ?>)">Delete</button>
                 </div>
+                <input type="hidden" class="book-id" value="<?php echo $book['book_id']; ?>">
             <?php endforeach; ?>
         </section>
         <?php else: // Show a message if the cart is empty ?>
@@ -192,7 +194,9 @@ if ($currentUser) {
                 <ul>
                     <li>
                         <p class="totalitems">Total (0 Item/s): ₱ 0.00</p>
-                        <button class="checkout-btn">Check Out</button>
+                        <a href="javascript:void(0);" onclick="checkoutSelectedItems()">
+                            <button class="checkout-btn">Check Out</button>
+                        </a>
                     </li>
                 </ul>
             </div>

@@ -174,5 +174,17 @@ document.querySelector('.delete-all').addEventListener('click', function() {
     }
 });
 
+function toggleSelectAll() {
+    const selectAllCheckbox = document.getElementById('checkbox-foot');
+    const itemCheckboxes = document.querySelectorAll('.item-select');
+    const isChecked = selectAllCheckbox.checked;
+
+    itemCheckboxes.forEach(checkbox => {
+        checkbox.checked = isChecked;
+    });
+
+    updateTotalItemsAndAmount(); // Update the displayed total items and amount
+}
+
 // Update the total quantity and amount display whenever the page loads
 updateTotalItemsAndAmount();

@@ -203,3 +203,13 @@ Array
     [book_id] => 10
     [quantity] => 1
 )
+Array
+(
+    [book_id] => 2
+    [quantity] => 1
+)
+Array
+(
+    [book_id] => 3
+    [quantity] => 1
+)

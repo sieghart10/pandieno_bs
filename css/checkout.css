@@ -1,4 +1,17 @@
+main {
+    width: 100%;
+    max-width: 1920px;
+    height: 100vh;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    color: white;
+    background-color: var(--color8);
+  }
+
 .delivery-address,
+.products-top,
 .products-ordered,
 .payment-method {
     background-color: var(--color6);
@@ -20,6 +33,7 @@
 
 .address-details {
     display: flex; 
+    flex-direction: column;
     align-items: center; 
     margin-top: 10px;
     width: 100%; 
@@ -209,6 +223,10 @@
   }
 .line{
     color: black;
+}
+
+footer {
+    position: relative;
 }
 
 :root {
