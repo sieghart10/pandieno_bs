@@ -4,10 +4,60 @@ session_start(); // Start the session
 include '../db.php';
 
 // Check if the user is logged in
-if (!isset($_SESSION['email'])) {
-    header('Location: http://localhost:3000/php/login.php'); // Redirect to login if not logged in
+if (!isset($_SESSION['email']) || !isset($_SESSION['user_id'])) {
+    $_SESSION['error'] = "User not logged in. Please log in to continue.";
+    header('Location: ../php/login.php'); // Redirect to login page
     exit();
 }
+
+if (isset($_POST['cancel_order'])) {
+    $orderId = $_POST['order_id'];
+
+    $sql = "UPDATE user_orders SET order_status = 'cancelled' WHERE order_id = :order_id AND user_id = :user_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':order_id' => $orderId,
+        ':user_id' => $_SESSION['user_id']
+    ]);
+
+    if ($stmt->rowCount() > 0) {
+        echo "Order cancelled successfully.";
+    } else {
+        echo "Failed to cancel the order.";
+    }
+}
+
+$currentUser = null;
+if (isset($_SESSION['user_id'])) {
+    // Query the database to get the user's data
+    $stmt = $pdo->prepare("SELECT username, email FROM users WHERE user_id = :user_id");
+    $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+if (isset($_POST['delete_order'])) {
+    $orderId = $_POST['order_id'];
+
+    $sql = "DELETE FROM user_orders WHERE order_id = :order_id AND user_id = :user_id AND order_status = 'cancelled'";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':order_id' => $orderId,
+        ':user_id' => $_SESSION['user_id']
+    ]);
+
+    if ($stmt->rowCount() > 0) {
+        echo "Order deleted successfully.";
+    } else {
+        echo "Failed to delete the order.";
+    }
+}
+
+
+$stmt = $pdo->prepare("SELECT COUNT(*) as count FROM cart_items ci JOIN carts c ON ci.cart_id = c.cart_id WHERE c.user_id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$result = $stmt->fetch(PDO::FETCH_ASSOC);
+$cartItemCount = $result['count'];
 
 // Initialize variables
 $email = $_SESSION['email']; // Get email from session
@@ -33,7 +83,7 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
     <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet"><!--im fell eng-->
     <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/main.css" />
     <link rel="stylesheet" href="http://localhost:3000/css/profile.css" />
-    <script type="module" src="script.js"></script>
+    <script type="module" src="../scripts/userProfile.js" defer></script>
 </head>
 <body>
     <nav>
@@ -57,8 +107,30 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
                         <input type="text" placeholder="Search item..." class="search-bar">
                     </li> -->
                     <li class="cart">
-                        <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
-                        <span class="cart-count">0</span>
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <a href="http://localhost:3000/php/shoppingcart.php">
+                                <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
+                                <?php if ($cartItemCount > 0): ?>
+                                    <span class="cart-count"><?php echo $cartItemCount; ?></span>
+                                <?php endif; ?>
+                            </a>
+                        <?php else: ?>
+                            <a href="http://localhost:3000/php/login.php">
+                                <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
+                            </a>
+                        <?php endif; ?>
+                    </li>
+                    <li>
+                        <?php if (!isset($_SESSION['user_id'])): // Check if user is logged out ?>
+                            <a href="http://localhost:3000/php/login.php">Log in</a> | <a href="http://localhost:3000/php/signup.php">Sign up</a>
+                        <?php else: ?>
+                            <div class="username-profile">
+                                <span><?php echo htmlspecialchars($currentUser['username']); ?></span>
+                                <a href="../php/profile.php">
+                                <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728921898/profile_evrssf.png" alt="User Profile Picture">
+                                </a>
+                            </div>
+                        <?php endif; ?>
                     </li>
                     <li>
                         <a href="http://localhost:3000/php/logout.php">Logout</a>
@@ -70,46 +142,15 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
     <main>
         <section class="profile-burger">
             <h3>My&nbspAccount</h3>
-            <a href="#" class="change-address">Profile</a>
-            <a href="#" class="change-address">Address</a>
+            <a href="#" class="profile" id="profile-link">Profile</a>
+            <a href="#" class="address" id="address-link">Address</a>
+            <a href="#" class="orders" id="orders-link">Orders</a>
         </section>
-        <section class="profile-section">
+        <section class="profile-section" id="content-section">
+            <!-- Content dynamically updated here -->
             <div>
-                <h1>My&nbspProfile</h1>
+                <h1>Welcome to your account</h1>
             </div>
-            <div class="right-container">
-                <div class="user-info">
-                    <form>
-                        <div class="form-container">
-                                <p><strong>Username:</strong><?php echo htmlspecialchars($user['username']); ?></p>
-                                <p><strong>Name:</strong><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['middle_name'] . ' ' . $user['last_name']); ?></p>
-                                <p><strong>Email:</strong><?php echo htmlspecialchars($user['email']); ?></p>
-                                <p><strong>Gender:</strong><?php echo htmlspecialchars(ucfirst($user['gender'])); ?></p>
-                                <!-- <div class="radio-group">
-                                    <label>
-                                        <input type="radio" name="option" value="1"> Female
-                                    </label>
-                                    <label>
-                                        <input type="radio" name="option" value="2"> Male
-                                    </label>
-                                    <label>
-                                        <input type="radio" name="option" value="3"> Other
-                                    </label>
-                                </div> -->
-                                <p><strong>Date of Birth:</strong><?php echo htmlspecialchars(date('F j, Y', strtotime($user['birthday']))); ?></p>
-                                <!-- <input type="date" id="date-of-birth" name="date-of-birth"><br><br>
-                                <input type="submit" value="Save"> -->
-
-                        </div>
-                        <!-- <label for="image" class="file-label">Select Image</label>
-                        <input type="file" id="image" name="image"> -->
-                    </form>
-                </div>
-                <div class="image-section">
-                    <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728921898/profile_evrssf.png" alt="Profile Image" /> 
-                </div>
-            </div>
-            
         </section>
     </main>
     <footer>

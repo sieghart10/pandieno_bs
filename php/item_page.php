@@ -124,10 +124,12 @@ if (isset($_GET['book_id'])) {
                         <?php if (!isset($_SESSION['user_id'])): ?>
                             <a href="http://localhost:3000/php/login.php">Log in</a> | <a href="http://localhost:3000/php/signup.php">Sign up</a>
                         <?php else: ?>
-                            <span><?php echo htmlspecialchars($currentUser['username']); ?></span>
-                            <a href="http://localhost:3000/php/profile.php">
-                                <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728921898/profile_evrssf.png" alt="Profile" style="width: 20px; height: 20px;">
-                            </a>
+                            <div class="username-profile">
+                                <span><?php echo htmlspecialchars($currentUser['username']); ?></span>
+                                <a href="profile.php">
+                                <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728921898/profile_evrssf.png" alt="User Profile Picture">
+                                </a>
+                            </div>
                         <?php endif; ?>
                     </li>
                 </ul>

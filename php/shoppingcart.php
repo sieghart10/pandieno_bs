@@ -193,7 +193,7 @@ if ($currentUser) {
             <div>
                 <ul>
                     <li>
-                        <p class="totalitems">Total (0 Item/s): ₱ 0.00</p>
+                        <p class="totalitems"></p>
                         <a href="javascript:void(0);" onclick="checkoutSelectedItems()">
                             <button class="checkout-btn">Check Out</button>
                         </a>

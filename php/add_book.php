@@ -32,7 +32,7 @@ $error_message = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     // Retrieve form data
     $title = $_POST['title'];
-    $category = $_POST['category'];
+    $category = strtolower($_POST['category']);
     $author = $_POST['author'];
     $isbn = $_POST['isbn'];
     $price = $_POST['price'];
@@ -58,8 +58,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
                 $cover_image_url = $upload['secure_url'];
 
                 // Insert book data into the database
-                $stmt = $pdo->prepare("INSERT INTO books (title, category, author, isbn, price, quantity, cover_image, description, keywords, publish_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$title, $category, $author, $isbn, $price, $quantity, $cover_image_url, $description, $keywords, $publish_date]);
+                $stmt = $pdo->prepare("INSERT INTO books (title, category, author, isbn, price, quantity, cover_image, description, keywords, publish_date, avg_rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$title, $category, $author, $isbn, $price, $quantity, $cover_image_url, $description, $keywords, $publish_date, 0]);
 
                 $_SESSION['success_message'] = "Book added successfully!";
                 header("Location: admin_dashboard.php");
