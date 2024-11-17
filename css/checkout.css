@@ -64,12 +64,16 @@ main {
 }
 
 .products-header {
-    justify-content: space-between;
+    display: flex;
+    justify-content: space-around;
     align-items: center;
     padding: 10px;
     color: var(--color2);
 }
 
+.item-details {
+    width: 100%;
+}
 .product-details {
     gap: 2rem;
     background-color: var(--color6);
@@ -79,8 +83,9 @@ main {
 
 
 .product-item {
+    width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     padding: 15px 10px;
     background-color: var(--color6);
@@ -114,15 +119,14 @@ main {
 }
 
 .product-prices {
+    align-items: center;
     display: flex;  
     gap: 20px; 
-    flex: 1; 
-    justify-content: flex-end; 
 }
 
 .product-prices p {
     margin: 0;  
-    text-align: right;  
+    text-align: center;  
 }
 
 .payment-method {
@@ -169,8 +173,10 @@ main {
 .payment-summary p.delivery {
     color: var(--color2); 
 }
-
-
+.delivery {
+    text-align: right;
+    margin: 0;
+}
 
 .payment-summary p.Merchandise {
     color: var(--color1); 
@@ -221,9 +227,22 @@ main {
     color: var(--color2);
     text-decoration: none;
   }
-.line{
-    color: black;
+
+.line {
+    border: none; /* Remove the default border */
+    height: 3px; /* Height of the line */
+    background: repeating-linear-gradient(
+        to right,
+        var(--color8),
+        var(--color8) 50%,
+        transparent 50%,
+        transparent 100%
+    );
+    background-size: 10px 6px; /* Adjust size for repeating effect */
+    width: 100%; /* Span the container */
+    margin: 10px 0; /* Add spacing */
 }
+
 
 footer {
     position: relative;
