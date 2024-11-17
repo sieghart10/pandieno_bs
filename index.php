@@ -22,8 +22,6 @@ if (isset($_GET['search'])) {
     $stmt = $pdo->query('SELECT book_id, title, cover_image FROM books');
 }
 
-$books = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 // Fetch the current user's data if logged in
 $currentUser = null;
 if (isset($_SESSION['user_id'])) {
@@ -47,6 +45,52 @@ if ($currentUser) {
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     $cartItemCount = $result['total_items'] ?? 0;
 }
+
+$sortQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
+$category = isset($_GET['category']) ? $_GET['category'] : '';
+$sort = isset($_GET['sort']) ? $_GET['sort'] : '';
+$price = isset($_GET['price']) ? $_GET['price'] : '';
+
+// Base query
+$query = "SELECT book_id, title, cover_image FROM books WHERE 1=1";
+
+// Add search filtering
+if (!empty($sortQuery)) {
+    $query .= " AND (title LIKE :search OR author LIKE :search OR category LIKE :search OR description LIKE :search OR keywords LIKE :search)";
+}
+
+// Add category filtering
+if (!empty($category)) {
+    $query .= " AND category = :category";
+}
+
+// Add sorting
+if ($sort === 'newest') {
+    $query .= " ORDER BY publish_date DESC";
+} elseif ($sort === 'oldest') {
+    $query .= " ORDER BY publish_date ASC";
+} elseif ($price === 'low') {
+    $query .= " ORDER BY price ASC";
+} elseif ($price === 'high') {
+    $query .= " ORDER BY price DESC";
+}
+
+// Prepare and execute query
+$stmt = $pdo->prepare($query);
+
+// Bind parameters
+$params = [];
+if (!empty($sortQuery)) {
+    $params['search'] = '%' . $sortQuery . '%';
+}
+if (!empty($category)) {
+    $params['category'] = $category;
+}
+
+$stmt->execute($params);
+
+$books = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
@@ -62,6 +106,12 @@ if ($currentUser) {
     <link rel="stylesheet" href="http://localhost:3000/css/mainpage.css" />
     <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/main.css" />
     <!-- <script type="module" src="http://localhost:3000/scripts/script.js" defer></script> -->
+    <script>
+        function submitForm() {
+            document.getElementById('filter-form').submit();
+        }
+    </script>
+
 </head>
 <body>
     <nav>
@@ -104,10 +154,12 @@ if ($currentUser) {
                         <?php if (!isset($_SESSION['user_id'])): // Check if user is logged out ?>
                             <a href="http://localhost:3000/php/login.php">Log in</a> | <a href="http://localhost:3000/php/signup.php">Sign up</a>
                         <?php else: ?>
-                            <span><?php echo htmlspecialchars($currentUser['username']); ?></span>
-                            <a href="http://localhost:3000/php/profile.php">
-                                <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728921898/profile_evrssf.png" alt="Profile" style="width: 20px; height: 20px;">
-                            </a>
+                            <div class="username-profile">
+                                <span><?php echo htmlspecialchars($currentUser['username']); ?></span>
+                                <a href="../php/profile.php">
+                                <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728921898/profile_evrssf.png" alt="User Profile Picture">
+                                </a>
+                            </div>
                         <?php endif; ?>
                     </li>
                 </ul>
@@ -117,32 +169,42 @@ if ($currentUser) {
 
     <main>
         <section class="filters">
-            <div>
-                <span id="sort_color">Sort by:</span>
-                <select>
-                    <option>By Category</option>
-                    <option>Fantasy</option>
-                    <option>Thriller</option>
-                    <option>Fiction</option>
-                    <option>Horror</option>
-                    <option>Romance</option>
-                    <option>Mystery</option>
-                    <option>Nonfiction</option>
-                    <option>Poetry</option>
-                    <option>Novel</option>
-                    <option>Adventure</option>
-                </select>
-                <select>
-                    <option>Latest</option>
-                    <option>Newest - Oldest</option>
-                    <option>Oldest - Newest</option>
-                </select>
-                <select>
-                    <option>Price Range</option>
-                    <option>Low - High</option>
-                    <option>High - Low</option>
-                </select>
+            <div class="sort-books">
+                <form method="GET" action="index.php" id="filter-form">
+                    <span id="sort_color">Sort by:</span>
+                    <select name="category" onchange="submitForm()">
+                        <option value="" <?php echo empty($category) ? 'selected' : ''; ?>>By Category</option>
+                        <option value="comedy" <?php echo $category === 'comedy' ? 'selected' : ''; ?>>Comedy</option>
+                        <option value="horror" <?php echo $category === 'horror' ? 'selected' : ''; ?>>Horror</option>
+                        <option value="drama" <?php echo $category === 'drama' ? 'selected' : ''; ?>>Drama</option>
+                        <option value="action" <?php echo $category === 'action' ? 'selected' : ''; ?>>Action</option>
+                        <option value="romance" <?php echo $category === 'romance' ? 'selected' : ''; ?>>Romance</option>
+                        <option value="sci-fi" <?php echo $category === 'sci-fi' ? 'selected' : ''; ?>>Sci-Fi</option>
+                        <option value="fantasy" <?php echo $category === 'fantasy' ? 'selected' : ''; ?>>Fantasy</option>
+                        <option value="mystery" <?php echo $category === 'mystery' ? 'selected' : ''; ?>>Mystery</option>
+                        <option value="thriller" <?php echo $category === 'thriller' ? 'selected' : ''; ?>>Thriller</option>
+                        <option value="historical" <?php echo $category === 'historical' ? 'selected' : ''; ?>>Historical</option>
+                        <option value="biography" <?php echo $category === 'biography' ? 'selected' : ''; ?>>Biography</option>
+                        <option value="self-help" <?php echo $category === 'self-help' ? 'selected' : ''; ?>>Self-Help</option>
+                        <option value="children" <?php echo $category === 'children' ? 'selected' : ''; ?>>Children</option>
+                        <option value="young adult" <?php echo $category === 'young adult' ? 'selected' : ''; ?>>Young Adult</option>
+                        <option value="non-fiction" <?php echo $category === 'non-fiction' ? 'selected' : ''; ?>>Non-Fiction</option>
+                        <option value="poetry" <?php echo $category === 'poetry' ? 'selected' : ''; ?>>Poetry</option>
+                        <option value="graphic novel" <?php echo $category === 'graphic novel' ? 'selected' : ''; ?>>Graphic Novel</option>
+                    </select>
+                    <select name="sort" onchange="submitForm()">
+                        <option value="" <?php echo empty($sort) ? 'selected' : ''; ?>>Latest</option>
+                        <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest - Oldest</option>
+                        <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest - Newest</option>
+                    </select>
+                    <select name="price" onchange="submitForm()">
+                        <option value="" <?php echo empty($price) ? 'selected' : ''; ?>>Price Range</option>
+                        <option value="low" <?php echo $price === 'low' ? 'selected' : ''; ?>>Low - High</option>
+                        <option value="high" <?php echo $price === 'high' ? 'selected' : ''; ?>>High - Low</option>
+                    </select>
+                </form>
             </div>
+
             <div>
                 <ul>
                     <li>
@@ -160,7 +222,18 @@ if ($currentUser) {
             </div>
             <div class="book-container">
                 <?php if (empty($books)): ?>
-                    <p>No books found for "<?php echo htmlspecialchars($searchQuery); ?>".</p>
+                    <p>
+                        <?php 
+                        // Check if searchQuery or sortQuery is set and display the relevant message
+                        if (!empty($searchQuery)) {
+                            echo 'No books found for "' . htmlspecialchars($searchQuery) . '".';
+                        } elseif (!empty($sortQuery)) {
+                            echo 'No books found for sorted by "' . htmlspecialchars($sortQuery) . '".';
+                        } else {
+                            echo 'No books found.';
+                        }
+                        ?>
+                    </p>
                 <?php else: ?>
                     <?php foreach ($books as $book): ?>
                         <div class="book-item">
@@ -175,7 +248,7 @@ if ($currentUser) {
         </section>
     </main>
     
-    <footer>
+    <footer class="footer">
         <p>© 2024 Pandieño Bookstore. All Rights Reserved.</p>
     </footer>
 </body>
