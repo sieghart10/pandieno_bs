@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     <input type="submit" value="Log in" class="log_in_btn">
                 </form>
-                <a href="http://localhost:3000/php/admin_login.php"><p>Log in as Admin</p></a>
+                <!-- <a href="http://localhost:3000/php/admin_login.php"><p>Log in as Admin</p></a> -->
             </div>
         </div>
         </div>
