@@ -63,8 +63,14 @@ if (isset($_GET['items'])) {
         $merchandiseTotal += $item['price'] * $item['quantity'];
     }
 
+    // Set shipping to 0 if merchandise total > 1000
+    if ($merchandiseTotal > 1000) {
+        $shippingTotal = 0;
+    }
+
     // Calculate total payment
     $totalPayment = $merchandiseTotal + $shippingTotal;
+
 }
 
 if (count($orderItems) == 0) {

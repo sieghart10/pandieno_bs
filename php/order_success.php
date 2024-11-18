@@ -103,7 +103,7 @@ $addressDisplay = $address
 
         <p>If you have any questions or need assistance, please contact our customer service.</p>
 
-        <a href="home.php" class="btn">Return to Home</a> <!-- Redirect to home page or other page -->
+        <a href="../index.php" class="btn">Return to Home</a> <!-- Redirect to home page or other page -->
     </div>
 
 </body>

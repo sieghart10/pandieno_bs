@@ -105,6 +105,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="right">
             <div class="right-container">
                 <h2 id="sign-up">Log In</h2>
+                <?php if (isset($error)): ?>
+                    <div class="error-message" style="color: red; font-weight: normal; margin-left: 2rem;">
+                        <?php echo $error; ?>
+                    </div>
+                <?php endif; ?>
                 <form action="http://localhost:3000/php/login.php" method="POST">
                     <label class= "rc-label" for="email">Email</label><br>
                     <input type="email" id="email" name="email" required><br><br>

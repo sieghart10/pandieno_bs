@@ -30,6 +30,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $keywords = $_POST['keywords'];
     $publish_date = $_POST['publish_date'];
 
+    // Check if the ISBN already exists in the database (excluding the current book)
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM books WHERE isbn = :isbn AND book_id != :book_id");
+    $stmt->bindParam(':isbn', $isbn);
+    $stmt->bindParam(':book_id', $book_id);
+    $stmt->execute();
+    $isbn_count = $stmt->fetchColumn();
+
+    if ($isbn_count > 0) {
+        // If ISBN is not unique, show an error message
+        echo "<script>alert('The ISBN you entered already exists for another book. Please enter a unique ISBN.');window.location.href = 'edit_book.php?book_id=$book_id';</script>";
+        exit();
+    }
     // Fetch the current cover image
     $stmt = $pdo->prepare("SELECT cover_image FROM books WHERE book_id = :book_id");
     $stmt->bindParam(':book_id', $book_id);
@@ -97,6 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="right-nav">
                 <ul>
                     <li>
-                        <a href="http://localhost:3000/php/admin_logout.php">Logout</a>
+                        <a href="http://localhost:3000/php/admin_dashboard.php">Dashboard</a>
                     </li>
                 </ul>
             </div>

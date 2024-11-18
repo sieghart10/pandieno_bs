@@ -298,3 +298,18 @@ Array
     [book_id] => 5
     [quantity] => 1
 )
+Array
+(
+    [book_id] => 6
+    [quantity] => 1
+)
+Array
+(
+    [book_id] => 1
+    [quantity] => 1
+)
+Array
+(
+    [book_id] => 2
+    [quantity] => 1
+)

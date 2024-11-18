@@ -1,30 +1,13 @@
+<!-- profile.php -->
 <?php
 session_start(); // Start the session
 
 include '../db.php';
 
-// Check if the user is logged in
 if (!isset($_SESSION['email']) || !isset($_SESSION['user_id'])) {
     $_SESSION['error'] = "User not logged in. Please log in to continue.";
     header('Location: ../php/login.php'); // Redirect to login page
     exit();
-}
-
-if (isset($_POST['cancel_order'])) {
-    $orderId = $_POST['order_id'];
-
-    $sql = "UPDATE user_orders SET order_status = 'cancelled' WHERE order_id = :order_id AND user_id = :user_id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':order_id' => $orderId,
-        ':user_id' => $_SESSION['user_id']
-    ]);
-
-    if ($stmt->rowCount() > 0) {
-        echo "Order cancelled successfully.";
-    } else {
-        echo "Failed to cancel the order.";
-    }
 }
 
 $currentUser = null;
@@ -36,39 +19,20 @@ if (isset($_SESSION['user_id'])) {
     $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-if (isset($_POST['delete_order'])) {
-    $orderId = $_POST['order_id'];
-
-    $sql = "DELETE FROM user_orders WHERE order_id = :order_id AND user_id = :user_id AND order_status = 'cancelled'";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':order_id' => $orderId,
-        ':user_id' => $_SESSION['user_id']
-    ]);
-
-    if ($stmt->rowCount() > 0) {
-        echo "Order deleted successfully.";
-    } else {
-        echo "Failed to delete the order.";
-    }
+$cartItemCount = 0;
+if ($currentUser) {
+    $stmt = $pdo->prepare("
+        SELECT SUM(quantity) AS total_items 
+        FROM cart_items 
+        JOIN carts ON cart_items.cart_id = carts.cart_id 
+        WHERE carts.user_id = :user_id
+    ");
+    $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $cartItemCount = $result['total_items'] ?? 0;
 }
 
-
-$stmt = $pdo->prepare("SELECT COUNT(*) as count FROM cart_items ci JOIN carts c ON ci.cart_id = c.cart_id WHERE c.user_id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$result = $stmt->fetch(PDO::FETCH_ASSOC);
-$cartItemCount = $result['count'];
-
-// Initialize variables
-$email = $_SESSION['email']; // Get email from session
-
-// Fetch user data from the database
-$sql = "SELECT username, first_name, middle_name, last_name, email, gender, birthday FROM users WHERE email = :email";
-$stmt = $pdo->prepare($sql);
-$stmt->bindParam(':email', $email);
-$stmt->execute();
-
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>

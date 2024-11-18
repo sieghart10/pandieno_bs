@@ -54,14 +54,23 @@ try {
 }
 
 // Fetch current user and cart details
-$stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
+if (isset($_SESSION['user_id'])) {
+    // Query the database to get the user's data
+    $stmt = $pdo->prepare("SELECT username, email FROM users WHERE user_id = :user_id");
+    $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$stmt = $pdo->prepare("SELECT COUNT(*) as count FROM cart_items ci JOIN carts c ON ci.cart_id = c.cart_id WHERE c.user_id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$result = $stmt->fetch(PDO::FETCH_ASSOC);
-$cartItemCount = $result['count'];
+    // Fetch cart details if the user is logged in
+    $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM cart_items ci JOIN carts c ON ci.cart_id = c.cart_id WHERE c.user_id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $cartItemCount = $result['count'];
+} else {
+    // If the user is not logged in, set $currentUser to null and $cartItemCount to 0
+    $currentUser = null;
+    $cartItemCount = 0;
+}
 ?>
 
 
@@ -169,23 +178,38 @@ $cartItemCount = $result['count'];
         </div>
 
         <div class="right-container">
-          <div class="book-list">
-              <?php foreach ($books as $book): ?>
-                  <a href="item_page.php?book_id=<?php echo $book['book_id']; ?>">
-                      <div class="book-item">
-                          <img src="<?php echo $book['cover_image']; ?>" alt="Book cover">
-                          <h3><?php echo htmlspecialchars($book['title']); ?></h3>
-                          <p><?php echo htmlspecialchars($book['author']); ?></p>
-                          <p>$<?php echo number_format($book['price'], 2); ?></p>
-                      </div>
-                  </a>
-              <?php endforeach; ?>
-          </div>
+            <div class="book-list">
+            <?php 
+            // Check if the books array is empty
+            if (empty($books)): 
+                // Check if search or category is set and display a relevant message
+                if (!empty($searchQuery)) {
+                    echo "<p>No books matched for <strong>" . htmlspecialchars($searchQuery) . "</strong>.</p>";
+                } elseif (!empty($category)) {
+                    echo "<p>No books available for <strong>" . htmlspecialchars(ucfirst($category)) . "</strong> category yet.</p>";
+                } else {
+                    echo "<p>No books available at the moment. Please check back later.</p>";
+                }
+            else: 
+                // Display books if available
+                foreach ($books as $book): ?>
+                    <a href="item_page.php?book_id=<?php echo $book['book_id']; ?>">
+                        <div class="book-item">
+                            <img src="<?php echo $book['cover_image']; ?>" alt="Book cover">
+                            <h3><?php echo htmlspecialchars($book['title']); ?></h3>
+                            <p><?php echo htmlspecialchars($book['author']); ?></p>
+                            <p>$<?php echo number_format($book['price'], 2); ?></p>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            </div>
+        </div>
         </div>
       </section>
     </main>
 </body>
-<footer>
+<!-- <footer>
   <p>© 2024 Pandieno Bookstore. All Rights Reserved .</p>
-</footer>
+</footer> -->
 </html>
