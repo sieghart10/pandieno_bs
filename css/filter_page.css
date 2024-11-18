@@ -2,7 +2,7 @@ main {
   flex: 1;
   width: 100%;
   max-width: 1920px;
-  max-height: calc(100vh - 12rem); /* Adjust this based on your layout */
+  /* max-height: calc(100vh - 12rem); Adjust this based on your layout */
   padding: 2rem;
   display: flex;
   flex-direction: column;

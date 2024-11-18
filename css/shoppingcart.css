@@ -20,6 +20,10 @@ main {
   margin-bottom: 10px;
 }
 
+section.item-section {
+  height: 100vh;
+}
+
 .product-details {
   display: flex; 
   align-items: center;
