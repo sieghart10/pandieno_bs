@@ -3,93 +3,81 @@
 session_start();
 include 'db.php';
 
-// Search query logic remains unchanged
-$searchQuery = '';
-if (isset($_GET['search'])) {
-    $searchQuery = trim($_GET['search']);
-    // Update the SQL query to include the keyword search
-    $stmt = $pdo->prepare("
-        SELECT book_id, title, cover_image 
-        FROM books 
-        WHERE title LIKE :search 
-          OR author LIKE :search 
-          OR category LIKE :search 
-          OR description LIKE :search  
-          OR keywords LIKE :search
-    ");
-    $stmt->execute(['search' => '%' . $searchQuery . '%']);
-} else {
-    $stmt = $pdo->query('SELECT book_id, title, cover_image FROM books');
+try {
+    // Initialize variables
+    $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
+    $category = isset($_GET['category']) ? trim($_GET['category']) : '';
+    $sort = isset($_GET['sort']) ? trim($_GET['sort']) : '';
+    $price = isset($_GET['price']) ? trim($_GET['price']) : '';
+
+    // Fetch current user details if logged in
+    $currentUser = null;
+    $cartItemCount = 0;
+    if (isset($_SESSION['user_id'])) {
+        $userId = intval($_SESSION['user_id']); // Sanitize session ID
+
+        // Get user data
+        $stmt = $pdo->prepare("SELECT username, email FROM users WHERE user_id = :user_id");
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Get cart item count
+        $stmt = $pdo->prepare("
+            SELECT SUM(quantity) AS total_items 
+            FROM cart_items 
+            JOIN carts ON cart_items.cart_id = carts.cart_id 
+            WHERE carts.user_id = :user_id
+        ");
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        $cartResult = $stmt->fetch(PDO::FETCH_ASSOC);
+        $cartItemCount = $cartResult['total_items'] ?? 0;
+    }
+
+    // Base query for books
+    $query = "SELECT book_id, title, cover_image FROM books WHERE 1=1";
+    $params = [];
+
+    // Add search filtering
+    if (!empty($searchQuery)) {
+        $query .= " AND (title LIKE :search OR author LIKE :search OR category LIKE :search OR description LIKE :search OR keywords LIKE :search)";
+        $params['search'] = '%' . $searchQuery . '%';
+    }
+
+    // Add category filtering
+    if (!empty($category)) {
+        $query .= " AND category = :category";
+        $params['category'] = $category;
+    }
+
+    // Add sorting
+    $orderBy = [];
+    if ($sort === 'newest') {
+        $orderBy[] = "publish_date DESC";
+    } elseif ($sort === 'oldest') {
+        $orderBy[] = "publish_date ASC";
+    }
+
+    if ($price === 'low') {
+        $orderBy[] = "price ASC";
+    } elseif ($price === 'high') {
+        $orderBy[] = "price DESC";
+    }
+
+    if (!empty($orderBy)) {
+        $query .= " ORDER BY " . implode(", ", $orderBy);
+    }
+
+    // Prepare and execute the final query
+    $stmt = $pdo->prepare($query);
+    $stmt->execute($params);
+    $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    // Handle database errors gracefully
+    die("Error fetching data: " . $e->getMessage());
 }
-
-// Fetch the current user's data if logged in
-$currentUser = null;
-if (isset($_SESSION['user_id'])) {
-    // Query the database to get the user's data
-    $stmt = $pdo->prepare("SELECT username, email FROM users WHERE user_id = :user_id");
-    $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
-    $stmt->execute();
-    $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
-}
-
-$cartItemCount = 0;
-if ($currentUser) {
-    $stmt = $pdo->prepare("
-        SELECT SUM(quantity) AS total_items 
-        FROM cart_items 
-        JOIN carts ON cart_items.cart_id = carts.cart_id 
-        WHERE carts.user_id = :user_id
-    ");
-    $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
-    $stmt->execute();
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    $cartItemCount = $result['total_items'] ?? 0;
-}
-
-$sortQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
-$category = isset($_GET['category']) ? $_GET['category'] : '';
-$sort = isset($_GET['sort']) ? $_GET['sort'] : '';
-$price = isset($_GET['price']) ? $_GET['price'] : '';
-
-// Base query
-$query = "SELECT book_id, title, cover_image FROM books WHERE 1=1";
-
-// Add search filtering
-if (!empty($sortQuery)) {
-    $query .= " AND (title LIKE :search OR author LIKE :search OR category LIKE :search OR description LIKE :search OR keywords LIKE :search)";
-}
-
-// Add category filtering
-if (!empty($category)) {
-    $query .= " AND category = :category";
-}
-
-// Add sorting
-if ($sort === 'newest') {
-    $query .= " ORDER BY publish_date DESC";
-} elseif ($sort === 'oldest') {
-    $query .= " ORDER BY publish_date ASC";
-} elseif ($price === 'low') {
-    $query .= " ORDER BY price ASC";
-} elseif ($price === 'high') {
-    $query .= " ORDER BY price DESC";
-}
-
-// Prepare and execute query
-$stmt = $pdo->prepare($query);
-
-// Bind parameters
-$params = [];
-if (!empty($sortQuery)) {
-    $params['search'] = '%' . $sortQuery . '%';
-}
-if (!empty($category)) {
-    $params['category'] = $category;
-}
-
-$stmt->execute($params);
-
-$books = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
