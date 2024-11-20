@@ -1,0 +1,153 @@
+/* General Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+ body {
+    background-color: var(--color8);
+}
+
+/* Navigation Styles */
+/* nav {
+    background-color: #2c3e50;
+    padding: 15px 0;
+    color: white;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.left-nav ul {
+    display: flex;
+    align-items: center;
+    list-style-type: none;
+}
+
+.left-nav ul li {
+    margin-right: 20px;
+}
+
+.left-nav img {
+    width: 40px;
+    height: auto;
+    margin-right: 10px;
+}
+
+.left-nav h2 {
+    font-size: 1.8rem;
+    color: #ecf0f1;
+}
+
+.right-nav ul {
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+}
+
+.right-nav ul li {
+    margin-left: 20px;
+}
+
+.username-profile {
+    display: flex;
+    align-items: center;
+}
+
+.username-profile span {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #ecf0f1;
+}
+
+.username-profile img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.right-nav a {
+    text-decoration: none;
+    color: #ecf0f1;
+    font-weight: bold;
+} */ */
+
+/* Order Success Container Styles */
+.order-success-container {
+    background-color:var(--color7);
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: var(--color2);
+    margin-bottom: 20px;
+}
+
+h2, h3 {
+    font-size: 1.8rem;
+    /* color: #2c3e50; */
+    margin-top: 20px;
+}
+
+p {
+    font-size: 1.2rem;
+    margin: 10px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+table th {
+    background-color: var(--color6);
+    font-size: 1.1rem;
+}
+
+table td {
+    font-size: 1rem;
+    background-color: var(--color5);
+
+    
+}
+
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color:var(--color3);
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.btn:hover {
+    background-color: var(--color2);
+}
+

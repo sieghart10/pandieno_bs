@@ -6,6 +6,7 @@ main {
     padding: 2rem;
     display: flex;
     background-color: var(--color8);
+    overflow-y: auto;
     
 }
 
@@ -15,22 +16,33 @@ main {
     width: 20%; 
     color: var(--color2);
     text-align: left;
+    margin-left: 50px;
+    font-weight: lighter;
+    position: sticky; /* Makes the element sticky */
+    top: 0; /* Position when sticky starts */
+    z-index: 1000; /* Ensure visibility over other elements */
 }
 
 .profile-burger h3 {
-    font-size: 18px;
+    font-family: 'IM Fell DW Pica SC', serif;
+    font-size: 25px;
     margin-bottom: 10px;
     color: var(--color2);
+    margin-left: 20px;
 }
 
 .profile-burger a {
+    font-family: 'IM Fell DW Pica SC', serif;
     display: block;
     padding: 15px 10px;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: bold;
     color: var(--color1);
     text-decoration: none;
+    font-weight: lighter;
+    margin-left: 20px;
     transition: background-color 0.3s ease;
+    
 }
 
 .profile-burger a:hover {
@@ -46,19 +58,22 @@ main {
 
 .profile-section {
     background-color: var(--color7); 
-    padding: 30px 30px; 
+    padding: 30px 30px 180px 30px; 
     width: 100%; 
     margin-left: 15px; 
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
     display: flex;
     flex-direction: column;
-    max-height: calc(85vh - 100px); 
+    margin-right: 50px;
+    /* max-height: calc(85vh - 100px);  */
+    height: 50rem;
 
 }
 
 .profile-section h1 {
-    font-size: 24px;
-    font-weight: bold;
+    font-family:'IM Fell DW Pica SC', serif;
+    font-size: 40px;
+    font-weight: normal;
     color: var(--color2);
     margin-bottom: 15px;
 }
@@ -70,7 +85,8 @@ main {
 }
 
 .form-container p {
-    font-size: 16px;
+    font-family: 'IM Fell DW Pica SC', serif;
+    font-size: 25px;
     margin-bottom: 5px; 
     color: var(--color2);
     display: block;
@@ -101,24 +117,30 @@ input[type="file"] {
 
 
 .image-section {
-    margin-top: 10px;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
+    height: 300px;
+    width: 30%;
     overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--color3);
+    /* display: flex; */
+   
    
 }
 
 .image-section img {
-    width: 200px;
+    width: 150px;
     align-items: center;
-    
-    
+    margin-bottom: 100px;
+    margin-left: 150px;
 }
 
+strong{
+    color: var(--color1);
+    font-size: 18px;
+    font-family: 'IM Fell DW Pica SC', serif;
+    font-weight: normal;
+}
+
+h1{
+    margin-top: 25px;
+}
 
 

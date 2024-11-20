@@ -56,6 +56,9 @@ section{
   .left-container{
     width:20%;
     padding: 1rem;
+    position: sticky; /* Makes the element sticky */
+    top: 0; /* Position when sticky starts */
+    z-index: 1000; /* Ensure visibility over other elements */
   }
   
   .right-container {
@@ -64,14 +67,14 @@ section{
   }
   
   .filter-name h1 {
-    font-size: 50px;
+    font-family: 'IM Fell DW Pica SC', serif;
+    font-size: 40px;
     color: var(--color2);
   }
   
   .categories ul{
     flex-direction: column;
-    background-color: var(--color4);
-    padding: 50px 10px 50px 20px;
+    padding: 20px 10px 20px 10px;
   }
   
   .categories li{
@@ -97,15 +100,21 @@ section{
   }
   
   .book-item {
-    width: 170px;
-    display: flex;
     flex-direction: column;
-    align-items: center;
     margin: 1rem;
-    background-color: var(--color4);
+    background-color: var(--color3);
     border-radius: 0;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
 }
+
+.book-item:hover{
+  box-shadow: 0 0 10px 6px var(--color3);
+  transition: box-shadow 0.1s ease;
+}
+
+
 
   .book-cover {
     margin: 1rem;
@@ -125,6 +134,7 @@ section{
   }
   
   .book-item h3 {
+    font-family: 'IM Fell DW Pica SC', serif;
     font-size: 18px;
     color: var(--color1);
     margin: 5px 0;
@@ -134,4 +144,11 @@ section{
     font-size: 16px;
     color: var(--color2);
     margin: 5px 0;
+  }
+
+  .categories{
+    background-color: var(--color4);
+    max-height: 1000px;
+    max-width: 500px;
+
   }

@@ -159,6 +159,7 @@ if (isset($_SESSION['user_id'])) {
           </div>
           <div class="categories">
                 <ul>
+                    <li><a>Category</a></li>
                     <li><a href="filter_page.php?filter=<?php echo htmlspecialchars($filter); ?>&category=fantasy">Fantasy</a></li>
                     <li><a href="filter_page.php?filter=<?php echo htmlspecialchars($filter); ?>&category=thriller">Thriller</a></li>
                     <li><a href="filter_page.php?filter=<?php echo htmlspecialchars($filter); ?>&category=mystery">Mystery</a></li>
