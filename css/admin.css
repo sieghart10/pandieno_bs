@@ -1,7 +1,6 @@
 main {
     width: 100%;
     max-width: 1920px;
-    height: 100%;
     display: flex;
     padding: 1rem 1rem 1rem 1rem;
     flex-direction: column;

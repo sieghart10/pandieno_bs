@@ -90,9 +90,18 @@ li {
   align-items: center;
 }
 
-.delete-all, .totalitems {
+.delete-all{
   padding: 10px 10px;
     background-color: var(--color3);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.totalitems {
+  padding: 10px 10px;
+    background-color: none;
     color: white;
     border: none;
     border-radius: 5px;
