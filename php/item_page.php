@@ -154,8 +154,12 @@ if (isset($_GET['book_id'])) {
             <span><?php echo htmlspecialchars($book['quantity']); ?> pieces available</span>
           </div>
           <div class="buttons">
-            <button onclick="addToCart(<?php echo $book_id; ?>)">Add to Cart</button>
-            <a href="http://localhost:3000/php/checkout.php"><button>Buy Now</button></a>
+            <?php if ($book['quantity'] > 0): ?>
+                <button onclick="addToCart(<?php echo $book_id; ?>)">Add to Cart</button>
+                <button onclick="redirectToCheckout(<?php echo $book_id; ?>)">Buy Now</button>
+            <?php else: ?>
+                <button disabled style="cursor: not-allowed; background-color: gray;">Out of Stock</button>
+            <?php endif; ?>
           </div>
           <div class="ratings">
               <p>Ratings: <?php echo htmlspecialchars($averageRating); ?> / 5 ★</p>
@@ -173,7 +177,7 @@ if (isset($_GET['book_id'])) {
         </div>
         <div class="store-details">
           <h3>Pandieño Bookstore</h3>
-          <a href="http://localhost:3000/about.html" class="view-shop">View Shop</a>
+          <a href="http://localhost:3000/html/about.html" class="view-shop">View Shop</a>
         </div>
       </section>
 

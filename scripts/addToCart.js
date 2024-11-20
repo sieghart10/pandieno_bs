@@ -62,3 +62,9 @@ function addToCart(bookId) {
         console.error('Error:', error);
     });
 }
+
+function redirectToCheckout(bookId) {
+    const quantity = document.getElementById('quantity').value;
+    const url = `http://localhost:3000/php/checkout.php?book_id=${bookId}&quantity=${quantity}`;
+    window.location.href = url;
+}

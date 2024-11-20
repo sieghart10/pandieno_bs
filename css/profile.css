@@ -66,7 +66,7 @@ main {
     flex-direction: column;
     margin-right: 50px;
     /* max-height: calc(85vh - 100px);  */
-    height: 50rem;
+    height: fit-content;
 
 }
 

@@ -79,7 +79,7 @@ try {
                                 <td><?php echo htmlspecialchars($row['category']); ?></td>
                                 <td><?php echo htmlspecialchars($row['author']); ?></td>
                                 <td><?php echo htmlspecialchars($row['isbn']); ?></td>
-                                <td><?php echo '$' . number_format($row['price'], 2); ?></td>
+                                <td><?php echo '₱' . number_format($row['price'], 2); ?></td>
                                 <td><?php echo $row['quantity']; ?></td>
                                 <td><img src="<?php echo $row['cover_image']; ?>" alt="<?php echo htmlspecialchars($row['title']); ?>" width="50"></td>
                                 <td><?php echo htmlspecialchars($row['description']); ?></td>

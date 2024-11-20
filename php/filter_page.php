@@ -159,7 +159,7 @@ if (isset($_SESSION['user_id'])) {
           </div>
           <div class="categories">
                 <ul>
-                    <li><a>Category</a></li>
+                    <li>Category</li>
                     <li><a href="filter_page.php?filter=<?php echo htmlspecialchars($filter); ?>&category=fantasy">Fantasy</a></li>
                     <li><a href="filter_page.php?filter=<?php echo htmlspecialchars($filter); ?>&category=thriller">Thriller</a></li>
                     <li><a href="filter_page.php?filter=<?php echo htmlspecialchars($filter); ?>&category=mystery">Mystery</a></li>
@@ -198,8 +198,6 @@ if (isset($_SESSION['user_id'])) {
                         <div class="book-item">
                             <img src="<?php echo $book['cover_image']; ?>" alt="Book cover">
                             <h3><?php echo htmlspecialchars($book['title']); ?></h3>
-                            <p><?php echo htmlspecialchars($book['author']); ?></p>
-                            <p>$<?php echo number_format($book['price'], 2); ?></p>
                         </div>
                     </a>
                 <?php endforeach; ?>

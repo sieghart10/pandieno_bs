@@ -134,7 +134,7 @@ $addressDisplay = $address
 
             <h3>Total Amount</h3>
             <p><strong>Subtotal:</strong> $<?= number_format($totalAmount, 2) ?></p>
-            <p><strong>Grand Total:</strong> $<?= number_format($grandTotal, 2) ?></p>
+            <p><strong>Grand Total:</strong> ₱<?= number_format($grandTotal, 2) ?></p>
 
             <p>If you have any questions or need assistance, please contact our customer service.</p>
 

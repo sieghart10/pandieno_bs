@@ -138,6 +138,7 @@ section{
     font-size: 18px;
     color: var(--color1);
     margin: 5px 0;
+    padding: 5px;
   }
   
   .book-item p {
