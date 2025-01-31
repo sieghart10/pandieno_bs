@@ -2,34 +2,28 @@
 session_start();
 include '../db.php';
 
-// Check if there is a success message and order ID in session
 if (!isset($_SESSION['success']) || !isset($_SESSION['current_order_id'])) {
     // Redirect to checkout if no success message or order ID is available
     header("Location: checkout.php");
     exit;
 }
 
-// Retrieve the success message
 $successMessage = $_SESSION['success'];
 unset($_SESSION['success']);  // Unset after using it
 
-// Retrieve the order ID from session
 $orderId = $_SESSION['current_order_id'];
 unset($_SESSION['current_order_id']);  // Unset after using it
 
-// Get the user's details
 $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Get user's address (check if the address_id exists in the users table)
 if ($currentUser['address_id']) {
     $stmt = $pdo->prepare("SELECT * FROM addresses WHERE address_id = ?");
     $stmt->execute([$currentUser['address_id']]);
     $address = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-// Fetch order details for the current order ID
 $stmt = $pdo->prepare("SELECT uo.*, b.title, b.price, b.cover_image 
                        FROM user_orders uo
                        JOIN books b ON uo.book_id = b.book_id
@@ -37,7 +31,6 @@ $stmt = $pdo->prepare("SELECT uo.*, b.title, b.price, b.cover_image
 $stmt->execute([$orderId]);
 $orderItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Calculate total order amount
 $totalAmount = 0;
 foreach ($orderItems as $item) {
     $totalAmount += $item['price'] * $item['quantity'];
@@ -46,8 +39,6 @@ foreach ($orderItems as $item) {
 $shippingTotal = 50;  // Fixed shipping fee
 $grandTotal = $totalAmount + $shippingTotal;
 
-// Prepare address display
-// Prepare address display using the available fields
 $addressDisplay = $address 
     ? htmlspecialchars($address['house_no']) . ' ' . htmlspecialchars($address['street']) . ', ' 
       . htmlspecialchars($address['barangay']) . ', ' . htmlspecialchars($address['city']) . ', ' 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 02, 2024 at 12:57 PM
+-- Generation Time: Nov 20, 2024 at 08:58 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,7 +39,9 @@ CREATE TABLE `carts` (
 --
 
 INSERT INTO `carts` (`cart_id`, `user_id`, `created_at`, `updated_at`) VALUES
-(1, 1, '2024-11-02 10:14:23', '2024-11-02 10:14:23');
+(1, 1, '2024-11-02 10:14:23', '2024-11-02 10:14:23'),
+(2, 2, '2024-11-20 05:52:44', '2024-11-20 05:52:44'),
+(3, 3, '2024-11-20 07:17:48', '2024-11-20 07:17:48');
 
 --
 -- Indexes for dumped tables
@@ -60,7 +62,7 @@ ALTER TABLE `carts`
 -- AUTO_INCREMENT for table `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables

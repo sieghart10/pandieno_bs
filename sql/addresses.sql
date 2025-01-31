@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 02, 2024 at 12:56 PM
+-- Generation Time: Nov 20, 2024 at 08:53 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -33,15 +33,18 @@ CREATE TABLE `addresses` (
   `house_no` varchar(100) NOT NULL,
   `street` varchar(100) NOT NULL,
   `province` enum('Bulacan') NOT NULL,
-  `city` enum('Pandi') NOT NULL
+  `city` enum('Pandi') NOT NULL,
+  `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `addresses`
 --
 
-INSERT INTO `addresses` (`address_id`, `barangay`, `house_no`, `street`, `province`, `city`) VALUES
-(1, 'Bunsuran 1', '425', 'Tanguile St.', 'Bulacan', 'Pandi');
+INSERT INTO `addresses` (`address_id`, `barangay`, `house_no`, `street`, `province`, `city`, `user_id`) VALUES
+(1, 'Bunsuran 1', '425', 'Tanguile St.', 'Bulacan', 'Pandi', 0),
+(2, 'Python', '7000', 'ChatGPT', 'Bulacan', 'Pandi', 0),
+(3, 'Bunsuran 1', '425', 'Tanguile St.', 'Bulacan', 'Pandi', 0);
 
 --
 -- Indexes for dumped tables
@@ -61,7 +64,7 @@ ALTER TABLE `addresses`
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

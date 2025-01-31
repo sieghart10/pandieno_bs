@@ -1,9 +1,8 @@
 <?php
 session_start();
-include '../db.php'; // Database connection
+include '../db.php';
 
 try {
-    // Fetch all books from the database
     $stmt = $pdo->query("SELECT * FROM books");
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {

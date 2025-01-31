@@ -1,9 +1,8 @@
 <?php
 session_start();
-include '../db.php'; // Database connection
-include '../cloudinary_config.php'; // Cloudinary configuration
+include '../db.php';
+include '../cloudinary_config.php';
 
-// Fetch ENUM values for the category field
 $stmt = $pdo->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME = 'books' AND COLUMN_NAME = 'category'");
 $stmt->execute();
 $column_type = $stmt->fetchColumn();
@@ -30,7 +29,6 @@ $publish_date = '';
 $error_message = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
-    // Retrieve form data
     $title = $_POST['title'];
     $category = strtolower($_POST['category']);
     $author = $_POST['author'];
@@ -41,7 +39,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     $keywords = $_POST['keywords'] ?? null;
     $publish_date = $_POST['publish_date'] ?? null;
 
-    // Check if ISBN already exists
     $isbn_check_stmt = $pdo->prepare("SELECT COUNT(*) FROM books WHERE isbn = ?");
     $isbn_check_stmt->execute([$isbn]);
     $isbn_exists = $isbn_check_stmt->fetchColumn();
@@ -57,7 +54,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
                 ]);
                 $cover_image_url = $upload['secure_url'];
 
-                // Insert book data into the database
                 $stmt = $pdo->prepare("INSERT INTO books (title, category, author, isbn, price, quantity, cover_image, description, keywords, publish_date, avg_rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 $stmt->execute([$title, $category, $author, $isbn, $price, $quantity, $cover_image_url, $description, $keywords, $publish_date, 0]);
 
@@ -117,6 +113,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
         <section class="inventory-section">
         <h2>Add New Book</h2>
             <form action="add_book.php" method="post" enctype="multipart/form-data">
+                <?php if ($error_message): ?>
+                    <label style="color: red; padding-left: 42%;"><?= htmlspecialchars($error_message) ?></label>
+                    <div style="height: 20px;"></div>
+                <?php endif; ?>
                 <table>
                     <thead>
                         <tr>
@@ -175,9 +175,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
                 <div class="form-buttons">
                     <button type="submit" name="submit">Add Book</button>
                 </div>  
-                <?php if ($error_message): ?>
-                    <label style="color: red;"><?= htmlspecialchars($error_message) ?></label>
-                <?php endif; ?>
             </form>
         </section>
     </main>

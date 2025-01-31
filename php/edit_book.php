@@ -30,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $keywords = $_POST['keywords'];
     $publish_date = $_POST['publish_date'];
 
-    // Check if the ISBN already exists in the database (excluding the current book)
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM books WHERE isbn = :isbn AND book_id != :book_id");
     $stmt->bindParam(':isbn', $isbn);
     $stmt->bindParam(':book_id', $book_id);
@@ -38,23 +37,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $isbn_count = $stmt->fetchColumn();
 
     if ($isbn_count > 0) {
-        // If ISBN is not unique, show an error message
         echo "<script>alert('The ISBN you entered already exists for another book. Please enter a unique ISBN.');window.location.href = 'edit_book.php?book_id=$book_id';</script>";
         exit();
     }
-    // Fetch the current cover image
     $stmt = $pdo->prepare("SELECT cover_image FROM books WHERE book_id = :book_id");
     $stmt->bindParam(':book_id', $book_id);
     $stmt->execute();
     $currentBook = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Default cover image path
     $cover_image = $currentBook['cover_image'] ?? null;
 
-    // Handle the image upload
     if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
         try {
-            // Create a unique public_id using the book ID and current timestamp
             $timestamp = time();
             $public_id = 'book_' . $book_id . '_' . $timestamp; // Unique public_id
     
@@ -74,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Update the book in the database
     $stmt = $pdo->prepare("UPDATE books SET title = :title, category = :category, author = :author, isbn = :isbn, price = :price, quantity = :quantity, description = :description, keywords = :keywords, publish_date = :publish_date, cover_image = :cover_image WHERE book_id = :book_id");
     $stmt->bindParam(':title', $title);
     $stmt->bindParam(':category', $category);
@@ -226,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p>&copy; 2024 Pandieño Bookstore. All Rights Reserved.</p>
     </footer>
     <script>
-        let defaultImagePath = "<?php echo htmlspecialchars($book['cover_image']); ?>"; // Set default image path
+        let defaultImagePath = "<?php echo htmlspecialchars($book['cover_image']); ?>";
     </script>
 </body>
 </html>

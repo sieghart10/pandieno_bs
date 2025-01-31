@@ -1,9 +1,12 @@
  <!-- index.php -->
 <?php
 session_start();
-include 'db.php';
+require_once 'db.php';  // Changed from include to require_once
 
 try {
+    // Get read connection for SELECT queries
+    $pdo = getReadConnection();
+    
     // Initialize variables
     $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
     $category = isset($_GET['category']) ? trim($_GET['category']) : '';
@@ -14,15 +17,15 @@ try {
     $currentUser = null;
     $cartItemCount = 0;
     if (isset($_SESSION['user_id'])) {
-        $userId = intval($_SESSION['user_id']); // Sanitize session ID
+        $userId = intval($_SESSION['user_id']); 
 
-        // Get user data
+        // Get user data - using read connection
         $stmt = $pdo->prepare("SELECT username, email FROM users WHERE user_id = :user_id");
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
         $stmt->execute();
         $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Get cart item count
+        // Get cart item count - using read connection
         $stmt = $pdo->prepare("
             SELECT SUM(quantity) AS total_items 
             FROM cart_items 
@@ -91,9 +94,9 @@ try {
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet" /><!--font IM Fell DW Pica SC-->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" /><!--font inter -->
     <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet"><!--im fell eng-->
-    <link rel="stylesheet" href="http://localhost:3000/css/mainpage.css" />
-    <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/main.css" />
-    <!-- <script type="module" src="http://localhost:3000/scripts/script.js" defer></script> -->
+    <link rel="stylesheet" href="http://192.168.8.113/pandieno_bookstore/css/mainpage.css" />
+    <link rel="stylesheet" type="text/css" href="http://192.168.8.113/pandieno_bookstore/css/main.css" />
+    <!-- <script type="module" src="http://192.168.8.113/scripts/script.js" defer></script> -->
     <script>
         function submitForm() {
             document.getElementById('filter-form').submit();
@@ -126,25 +129,25 @@ try {
                     </li>
                     <li class="cart">
                         <?php if (isset($_SESSION['user_id'])): ?>
-                            <a href="http://localhost:3000/php/shoppingcart.php">
+                            <a href="http://192.168.8.113/php/shoppingcart.php">
                                 <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
                                 <?php if ($cartItemCount > 0): ?>
                                     <span class="cart-count"><?php echo $cartItemCount; ?></span>
                                 <?php endif; ?>
                             </a>
                         <?php else: ?>
-                            <a href="http://localhost:3000/php/login.php">
+                            <a href="http://192.168.8.113/pandieno_bookstore/php/login.php">
                                 <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
                             </a>
                         <?php endif; ?>
                     </li>
                     <li>
                         <?php if (!isset($_SESSION['user_id'])): // Check if user is logged out ?>
-                            <a href="http://localhost:3000/php/login.php">Log in</a> | <a href="http://localhost:3000/php/signup.php">Sign up</a>
+                            <a href="http://192.168.8.113/pandieno_bookstore/php/login.php">Log in</a> | <a href="http://192.168.8.113/pandieno_bookstore/php/signup.php">Sign up</a>
                         <?php else: ?>
                             <div class="username-profile">
                                 <span><?php echo htmlspecialchars($currentUser['username']); ?></span>
-                                <a href="../php/profile.php">
+                                <a href="/php/profile.php">
                                 <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728921898/profile_evrssf.png" alt="User Profile Picture">
                                 </a>
                             </div>
@@ -196,15 +199,15 @@ try {
             <div>
                 <ul>
                     <li>
-                        <span><a href="http://localhost:3000/php/filter_page.php?filter=top_rated">Top Rated</a></span>
+                        <span><a href="http://192.168.8.113/php/filter_page.php?filter=top_rated">Top Rated</a></span>
                     </li>
                     <li>
                         <span> | </span>
-                        <span><a href="http://localhost:3000/php/filter_page.php?filter=latest">Latest</a></span>
+                        <span><a href="http://192.168.8.113/php/filter_page.php?filter=latest">Latest</a></span>
                     </li>
                     <li>
                         <span> | </span>
-                        <span><a href="http://localhost:3000/php/filter_page.php?filter=top_sales">Top Sales</a></span>
+                        <span><a href="http://192.168.8.113/php/filter_page.php?filter=top_sales">Top Sales</a></span>
                     </li>
                 </ul>
             </div>
@@ -225,7 +228,7 @@ try {
                 <?php else: ?>
                     <?php foreach ($books as $book): ?>
                         <div class="book-item">
-                            <a href="http://localhost:3000/php/item_page.php?book_id=<?php echo $book['book_id']; ?>">
+                            <a href="http://192.168.8.113/php/item_page.php?book_id=<?php echo $book['book_id']; ?>">
                                 <img src="<?php echo htmlspecialchars($book['cover_image']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>">
                                 <p><?php echo htmlspecialchars($book['title']); ?></p>
                             </a>
@@ -241,4 +244,3 @@ try {
     </footer>
 </body>
 </html>
-<!-- jk -->

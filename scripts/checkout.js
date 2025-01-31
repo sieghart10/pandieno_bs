@@ -1,4 +1,3 @@
-// Global variables
 let totalItems = 0;
 let totalPrice = 0;
 

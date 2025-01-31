@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(url);
             const contentType = response.headers.get('content-type');
             
-            // Log the raw response content for debugging
             const responseText = await response.text();
             console.log('Raw response:', responseText);
             
@@ -19,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`Invalid response type: ${contentType}. Expected JSON.`);
             }
     
-            const data = JSON.parse(responseText);  // Manually parse the JSON
+            const data = JSON.parse(responseText); 
             console.log(data);
             
             if (data.error) {
@@ -35,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let content = '';
 
             if (url.includes('get_user_details.php')) {
-                // Display user details
                 content = `
                     <h2>User Profile</h2>
                     <div class="user-details">
@@ -49,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (url.includes('get_user_address.php')) {
-                // Display address details
                 content += `
                     <h2>Address</h2>
                     <div class="user-address">
@@ -108,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             contentSection.innerHTML = content;
 
-            // Add event listeners for cancel buttons
             if (url.includes('get_user_orders.php')) {
                 document.querySelectorAll('.cancel-order').forEach(button => {
                     button.addEventListener('click', handleCancelOrder);
@@ -187,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 
-    // Event listeners for navigation
     profileLink.addEventListener('click', (e) => {
         e.preventDefault();
         loadContent('get_user_details.php');

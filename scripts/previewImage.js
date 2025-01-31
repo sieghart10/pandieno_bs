@@ -1,33 +1,32 @@
 function previewImage(event) {
-    console.log("File input changed"); // Check if this is logged
+    console.log("File input changed");
     const file = event.target.files[0];
     const preview = document.getElementById('cover-image-preview');
 
     if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            console.log("File read successfully"); // Check if this is logged
-            preview.src = e.target.result; // Set the preview image source to the loaded file
-            preview.style.display = 'block'; // Show the preview image
+            console.log("File read successfully");
+            preview.src = e.target.result;
+            preview.style.display = 'block';
         }
-        reader.readAsDataURL(file); // Read the file as a data URL
+        reader.readAsDataURL(file);
     } else {
-        resetImage(); // Reset if no file
+        resetImage();
     }
 }
 
 function resetImage() {
-    console.log("Resetting image"); // Check if this is logged
+    console.log("Resetting image");
     const preview = document.getElementById('cover-image-preview');
-    preview.src = defaultImagePath; // Reset the image source to the default
-    preview.style.display = 'block'; // Ensure the preview is visible
-    document.getElementById('file-upload-button').value = ''; // Clear the file input
+    preview.src = defaultImagePath;
+    preview.style.display = 'block';
+    document.getElementById('file-upload-button').value = '';
 
-    // Optionally: You can log the default image path or update the UI to show that it was reset
     console.log("Image reset to:", defaultImagePath);
 }
 
 function handleImageError(img) {
-    img.src = defaultImagePath; // Set to your default image path
-    img.alt = 'Default Cover Image'; // Optional: Update the alt text
+    img.src = defaultImagePath; 
+    img.alt = 'Default Cover Image';
 }

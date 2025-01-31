@@ -12,7 +12,7 @@ $currentUser = null;
 $address = null;
 $orderItems = [];
 $merchandiseTotal = 0;
-$shippingTotal = 50; // Fixed shipping rate
+$shippingTotal = 50;
 $totalPayment = 0;
 $cartItemCount = 0;
 
@@ -21,14 +21,12 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Fetch address data
 if ($currentUser['address_id']) {
     $stmt = $pdo->prepare("SELECT * FROM addresses WHERE address_id = ?");
     $stmt->execute([$currentUser['address_id']]);
     $address = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-// Fetch cart items count to ensure there are items in the cart
 $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM cart_items ci JOIN carts c ON ci.cart_id = c.cart_id WHERE c.user_id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -36,20 +34,18 @@ $cartItemCount = $result['count'];
 
 if ($cartItemCount == 0) {
     $_SESSION['error'] = "Your cart is empty. Please add items before proceeding to checkout.";
-    header("Location: shoppingcart.php"); // Redirect to the cart page
+    header("Location: shoppingcart.php");
     exit;
 }
 
-// Check if the user has selected any items for checkout
 if (isset($_GET['items'])) {
     $selectedItems = json_decode($_GET['items'], true);
     if (!$selectedItems || count($selectedItems) == 0) {
         $_SESSION['error'] = "You must select items to proceed to checkout.";
-        header("Location: shoppingcart.php"); // Redirect to cart page
+        header("Location: shoppingcart.php");
         exit;
     }
 
-    // Fetch selected items
     $placeholders = str_repeat('?,', count($selectedItems) - 1) . '?';
     $stmt = $pdo->prepare("SELECT b.*, ci.quantity 
                            FROM cart_items ci
@@ -58,37 +54,31 @@ if (isset($_GET['items'])) {
     $stmt->execute($selectedItems);
     $orderItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Calculate merchandise total
     foreach ($orderItems as $item) {
         $merchandiseTotal += $item['price'] * $item['quantity'];
     }
 
-    // Set shipping to 0 if merchandise total > 1000
     if ($merchandiseTotal > 1000) {
         $shippingTotal = 0;
     }
 
-    // Calculate total payment
     $totalPayment = $merchandiseTotal + $shippingTotal;
 
 }
 
 if (count($orderItems) == 0) {
     $_SESSION['error'] = "You must select items to proceed to checkout.";
-    header("Location: shoppingcart.php"); // Redirect to cart page
+    header("Location: shoppingcart.php");
     exit;
 }
 
-// Process checkout when the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo->beginTransaction();
     try {
-        // Validate stock and place order
         foreach ($orderItems as $item) {
             $book_id = $item['book_id'];
             $quantity = $item['quantity'];
             
-            // Check if stock is sufficient
             $stmt = $pdo->prepare("SELECT quantity FROM books WHERE book_id = ?");
             $stmt->execute([$book_id]);
             $book = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -97,28 +87,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("Not enough stock for {$item['title']}");
             }
 
-            // Update book stock
             $stmt = $pdo->prepare("UPDATE books SET quantity = quantity - ? WHERE book_id = ?");
             $stmt->execute([$quantity, $book_id]);
 
-            // Insert into user_orders table
             $stmt = $pdo->prepare("INSERT INTO user_orders (book_id, user_id, price, quantity, payment_method, order_status, address_id) 
                                    VALUES (?, ?, ?, ?, 'cash_on_delivery', 'pending', ?)");
             $stmt->execute([$book_id, $currentUser['user_id'], $item['price'], $quantity, $currentUser['address_id']]);
             
-            // Capture the last inserted order ID (use the most recent order)
             $_SESSION['current_order_id'] = $pdo->lastInsertId();
         }
 
-        // Remove items from the cart
         $placeholders = str_repeat('?,', count($selectedItems) - 1) . '?';
         $stmt = $pdo->prepare("DELETE FROM cart_items WHERE cart_item_id IN ($placeholders)");
         $stmt->execute($selectedItems);
 
-        // Commit transaction
         $pdo->commit();
 
-        // Redirect to success page
         $_SESSION['success'] = "Order placed successfully!";
         header("Location: order_success.php");
         exit;
@@ -279,14 +263,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script>
         document.getElementById('orderForm').addEventListener('submit', function(e) {
-            // Show confirmation dialog
             var userConfirmed = confirm('Are you sure you want to place this order?');
             
-            // If the user cancels, prevent form submission
             if (!userConfirmed) {
-                e.preventDefault(); // Prevent form submission
+                e.preventDefault();
             }
-            // No need to prevent form submission when user confirms
         });
     </script>
 

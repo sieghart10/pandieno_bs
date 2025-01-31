@@ -4,10 +4,8 @@ include '../db.php';
 
 header('Content-Type: application/json');
 
-// Ensure no other output is sent before JSON response
 ob_clean();
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'User not logged in.']);
     exit();
@@ -15,11 +13,9 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Check if it's a cancel order request
 if (isset($_POST['cancel_order'])) {
     $orderId = $_POST['order_id'];
 
-    // Update order status to cancelled
     $sql = "UPDATE user_orders SET order_status = 'cancelled' WHERE order_id = :order_id AND user_id = :user_id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
@@ -35,7 +31,6 @@ if (isset($_POST['cancel_order'])) {
     exit(); // stop further execution after cancellation
 }
 
-// Fetch user's orders if it's not a cancel request
 $sql = " SELECT o.order_id, o.book_id, o.price, o.quantity, o.date, o.payment_method, o.order_status, b.title, b.cover_image
         FROM user_orders o
         JOIN books b ON o.book_id = b.book_id

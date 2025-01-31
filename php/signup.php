@@ -1,41 +1,32 @@
 <?php
 session_start();
-require '../db.php'; // Include your database connection file
+require '../db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve and sanitize input values
     $email = htmlspecialchars(trim($_POST['email']));
     $password = htmlspecialchars(trim($_POST['password']));
     $confirm_password = htmlspecialchars(trim($_POST['confirm-password']));
 
-    // Validate input
     if ($password === $confirm_password) {
-        // Check if email already exists
         $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
         $stmt->execute(['email' => $email]);
         
         if ($stmt->rowCount() > 0) {
             echo "Email already in use.";
-            // Redisplay the form
             displayForm();
         } else {
-            // Proceed with storing the user data
             session_regenerate_id(true);
             $_SESSION['email'] = $email; // Store email in session
             $_SESSION['password'] = $password; 
             
-            // Hash the password for security
-
             header("Location: http://localhost:3000/php/usersignup.php");
             exit; // Always use exit after header redirection
         }
     } else {
         echo "Passwords do not match.";
-        // Redisplay the form
         displayForm();
     }
 } else {
-    // Display the form when the request method is GET
     displayForm();
 }
 

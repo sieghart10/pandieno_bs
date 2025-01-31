@@ -9,27 +9,22 @@ $category = isset($_GET['category']) ? trim($_GET['category']) : '';
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'top_rated'; // Default filter
 $filterTitle = ucfirst(str_replace('_', ' ', $filter));
 
-// Initialize books as an empty array
 $books = [];
 
 try {
-    // Base query with optional filters
     $query = "SELECT * FROM books WHERE 1=1";
     $params = [];
 
-    // Add search condition if search is provided
     if (!empty($searchQuery)) {
         $query .= " AND (title LIKE :search OR author LIKE :search OR keywords LIKE :search)";
         $params[':search'] = '%' . $searchQuery . '%';
     }
 
-    // Add category filter if category is provided
     if (!empty($category)) {
         $query .= " AND category = :category";
         $params[':category'] = $category;
     }
 
-    // Add additional filters (e.g., latest, top_sales, etc.)
     switch ($filter) {
         case 'latest':
             $query .= " ORDER BY publish_date DESC";
@@ -44,7 +39,6 @@ try {
             $query .= " ORDER BY publish_date DESC"; // Default to latest
     }
 
-    // Prepare, execute, and fetch results
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);
     $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -53,21 +47,17 @@ try {
     echo "Error fetching books: " . $e->getMessage();
 }
 
-// Fetch current user and cart details
 if (isset($_SESSION['user_id'])) {
-    // Query the database to get the user's data
     $stmt = $pdo->prepare("SELECT username, email FROM users WHERE user_id = :user_id");
     $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
     $stmt->execute();
     $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Fetch cart details if the user is logged in
     $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM cart_items ci JOIN carts c ON ci.cart_id = c.cart_id WHERE c.user_id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     $cartItemCount = $result['count'];
 } else {
-    // If the user is not logged in, set $currentUser to null and $cartItemCount to 0
     $currentUser = null;
     $cartItemCount = 0;
 }
@@ -181,9 +171,7 @@ if (isset($_SESSION['user_id'])) {
         <div class="right-container">
             <div class="book-list">
             <?php 
-            // Check if the books array is empty
             if (empty($books)): 
-                // Check if search or category is set and display a relevant message
                 if (!empty($searchQuery)) {
                     echo "<p>No books matched for <strong>" . htmlspecialchars($searchQuery) . "</strong>.</p>";
                 } elseif (!empty($category)) {
@@ -192,7 +180,6 @@ if (isset($_SESSION['user_id'])) {
                     echo "<p>No books available at the moment. Please check back later.</p>";
                 }
             else: 
-                // Display books if available
                 foreach ($books as $book): ?>
                     <a href="item_page.php?book_id=<?php echo $book['book_id']; ?>">
                         <div class="book-item">

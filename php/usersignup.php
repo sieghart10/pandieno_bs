@@ -33,7 +33,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         $pdo->beginTransaction();
 
-        // Insert into addresses table
         $address_sql = "INSERT INTO addresses (barangay, house_no, street, city, province)
                         VALUES (:barangay, :house_no, :street, :city, :province)";
         $address_stmt = $pdo->prepare($address_sql);
@@ -47,7 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $address_id = $pdo->lastInsertId();
 
-        // Insert into users table
         $user_sql = "INSERT INTO users (username, first_name, middle_name, last_name, email, password, birthday, gender, status, date_created, address_id)
                      VALUES (:username, :first_name, :middle_name, :last_name, :email, :password, :birthday, :gender, 'active', current_timestamp(), :address_id)";
         
@@ -67,7 +65,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['user_id'] = $pdo->lastInsertId(); 
         $_SESSION['username'] = $username;
 
-        // Create a cart entry for the user
         $cart_sql = "INSERT INTO carts (user_id) VALUES (:user_id)";
         $cart_stmt = $pdo->prepare($cart_sql);
         $cart_stmt->execute([':user_id' => $_SESSION['user_id']]);

@@ -1,28 +1,22 @@
 <?php
 session_start();
-require_once '../db.php'; // Make sure this file connects to your database
-
-// Get the PDO instance from the function
+require_once '../db.php';
 $db = getConnection();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get username and password from the form
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Prepare SQL statement to prevent SQL injection
     $stmt = $db->prepare("SELECT * FROM admins WHERE username = :username");
     $stmt->bindParam(':username', $username);
     $stmt->execute();
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Verify the password if the admin exists
     if ($admin && password_verify($password, $admin['password'])) {
         // Set session variables
-        $_SESSION['admin_id'] = $admin['id']; // Assuming 'id' is the primary key
+        $_SESSION['admin_id'] = $admin['id'];
         $_SESSION['status'] = 'active';
 
-        // Redirect to admin page
         header('Location: http://localhost:3000/php/admin_dashboard.php');
         exit();
     } else {

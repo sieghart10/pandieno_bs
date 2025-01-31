@@ -99,6 +99,10 @@ li {
     cursor: pointer;
 }
 
+.totalitems {
+  background-color: transparent;
+}
+
 button.item-action{
   padding: 10px 10px;
   background-color: var(--color3);

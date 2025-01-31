@@ -1,5 +1,4 @@
 <?php
-// process_checkout.php
 session_start();
 include '../db.php';
 
@@ -10,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Get the JSON data from the request
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
@@ -22,7 +20,6 @@ if (!isset($data['items']) || empty($data['items'])) {
 try {
     $pdo->beginTransaction();
 
-    // Get user's address
     $stmt = $pdo->prepare("
         SELECT address_id FROM addresses 
         WHERE user_id = ? 
@@ -36,7 +33,6 @@ try {
         throw new Exception('No delivery address found');
     }
 
-    // Create the order
     $stmt = $pdo->prepare("
         INSERT INTO user_orders (user_id, date, payment_method, order_status, address_id)
         VALUES (?, NOW(), 'cash_on_delivery', 'pending', ?)
@@ -44,9 +40,7 @@ try {
     $stmt->execute([$_SESSION['user_id'], $address['address_id']]);
     $orderId = $pdo->lastInsertId();
 
-    // Process each item
     foreach ($data['items'] as $item) {
-        // Get current book information
         $stmt = $pdo->prepare("
             SELECT quantity as stock FROM books WHERE book_id = ?
         ");
@@ -61,7 +55,6 @@ try {
             throw new Exception("Insufficient stock for book: " . $item['title']);
         }
 
-        // Update book stock
         $stmt = $pdo->prepare("
             UPDATE books 
             SET quantity = quantity - ?,
@@ -71,7 +64,6 @@ try {
         ");
         $stmt->execute([$item['quantity'], $item['quantity'], $item['quantity'], $item['book_id']]);
 
-        // Add order details
         $stmt = $pdo->prepare("
             INSERT INTO user_orders (order_id, book_id, user_id, price, quantity)
             VALUES (?, ?, ?, ?, ?)
@@ -84,7 +76,6 @@ try {
             $item['quantity']
         ]);
 
-        // Remove from cart
         $stmt = $pdo->prepare("
             DELETE FROM cart_items 
             WHERE cart_item_id = ?

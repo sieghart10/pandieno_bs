@@ -5,7 +5,6 @@ include '../db.php';
 
 $currentUser = null;
 if (isset($_SESSION['user_id'])) {
-    // Query the database to get the user's data
     $stmt = $pdo->prepare("SELECT username, email FROM users WHERE user_id = :user_id");
     $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
     $stmt->execute();
@@ -17,14 +16,11 @@ if (isset($_SESSION['user_id'])) {
 
 $cartItems = [];
 if ($currentUser) {
-    // Modified to include search functionality
     $searchQuery = '';
     if (isset($_GET['search'])) {
         $searchQuery = trim($_GET['search']);
-        // Create the search parameter with wildcards
         $searchParam = '%' . $searchQuery . '%';
         
-        // Fetch cart items with search filter
         $stmt = $pdo->prepare("
             SELECT ci.cart_item_id, ci.quantity, b.title, b.price, b.cover_image 
             FROM cart_items ci
@@ -41,7 +37,6 @@ if ($currentUser) {
         $stmt->bindParam(':search', $searchParam, PDO::PARAM_STR);
         $stmt->execute();
     } else {
-        // Original cart items query without search
         $stmt = $pdo->prepare("
             SELECT ci.cart_item_id, ci.quantity, b.title, b.price, b.cover_image 
             FROM cart_items ci

@@ -4,7 +4,6 @@ include '../db.php';
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch user's cart items
 $stmt = $pdo->prepare("SELECT books.title, carts.quantity, books.price 
                        FROM carts 
                        JOIN books ON carts.item_id  = books.book_id 

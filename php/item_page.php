@@ -2,19 +2,15 @@
 session_start();
 include '../db.php';
 
-// Initialize current user and cart item count
 $currentUser = null;
 $cartItemCount = 0;
 
-// Check if user is logged in
 if (isset($_SESSION['user_id'])) {
-    // Query to fetch user data
     $stmt = $pdo->prepare("SELECT username, email FROM users WHERE user_id = :user_id");
     $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
     $stmt->execute();
     $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Get the cart item count
     $stmt = $pdo->prepare("
         SELECT SUM(quantity) AS total_items 
         FROM cart_items 
@@ -27,11 +23,9 @@ if (isset($_SESSION['user_id'])) {
     $cartItemCount = $result['total_items'] ?? 0;
 }
 
-// Get the book_id from the URL
 if (isset($_GET['book_id'])) {
     $book_id = intval($_GET['book_id']);
 
-    // Fetch the selected book details
     $stmt = $pdo->prepare("
     SELECT 
         title, author, category, publish_date, price, description, quantity, cover_image,
@@ -45,10 +39,8 @@ if (isset($_GET['book_id'])) {
     $stmt->execute();
     $book = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Format average rating
     $averageRating = $book['average_rating'] ? number_format($book['average_rating'], 1) : 0;
 
-    // Fetch related books based on category or author (excluding the current book)
     $stmt_related = $pdo->prepare("
         SELECT book_id, title, cover_image 
         FROM books 
@@ -62,7 +54,6 @@ if (isset($_GET['book_id'])) {
     $stmt_related->execute();
     $relatedBooks = $stmt_related->fetchAll(PDO::FETCH_ASSOC);
 
-    // Fetch other books that don't match the category or author, limit to 4
     $stmt_others = $pdo->prepare("
         SELECT book_id, title, cover_image 
         FROM books 
@@ -73,7 +64,6 @@ if (isset($_GET['book_id'])) {
     $stmt_others->execute();
     $otherBooks = $stmt_others->fetchAll(PDO::FETCH_ASSOC);
 } else {
-    // Redirect back to index.php if no book_id is provided
     header('Location: http://localhost:3000/index.php');
     exit;
 }

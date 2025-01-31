@@ -1,13 +1,9 @@
 <?php
-// Include database connection
 include '../db.php';
 
-// Start session
 session_start();
 
-// Check if the user is already logged in
 if (isset($_SESSION['email'])) {
-    // Fetch the user from the database using the stored email
     $email = $_SESSION['email'];
     $sql = "SELECT * FROM users WHERE email = :email";
     $stmt = $pdo->prepare($sql);
@@ -15,29 +11,23 @@ if (isset($_SESSION['email'])) {
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    // Check if the user's status is active
     if ($user && $user['status'] === 'active') {
-        header("Location: http://localhost:3000/index.php");
+        header("Location: http://192.168.8.113/pandieno_bookstore/index.php");
         exit; // Ensure no further code is executed
     }
 }
 
-// Check if form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Retrieve form inputs
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    // Fetch the user from the database using the provided email
     $sql = "SELECT * FROM users WHERE email = :email";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':email', $email);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Check if the user exists and the password is correct
     if ($user && password_verify($password, $user['password'])) {
-        // Password is correct, log in the user
         $_SESSION['user_id'] = $user['user_id']; // Store user ID in session
         $_SESSION['email'] = $user['email']; // Store email in session
         // $_SESSION['username'] = $username;
@@ -49,10 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_update->execute();
 
         // Redirect to the logged-in page
-        header("Location: http://localhost:3000/index.php");
+        header("Location: http://192.168.8.113/pandieno_bookstore/index.php");
         exit;
     } else {
-        // Invalid credentials, display error
         $error = "Invalid email or password.";
     }
 }
@@ -65,12 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" href="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728904749/logo_vccjhc.ico" type="image/x-icon">
-    <link rel="stylesheet" href="http://localhost:3000/css/main.css" />
-    <link rel="stylesheet" href="http://localhost:3000/css/login.css" />
+    <link rel="stylesheet" href="http://192.168.8.113/pandieno_bookstore/css/main.css" />
+    <link rel="stylesheet" href="http://192.168.8.113/pandieno_bookstore/css/login.css" />
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet"><!--im fell eng-->
-    <script type="module" src="http://localhost:3000/scripts/showPassword.js" defer></script>
+    <script type="module" src="http://192.168.8.113/pandieno_bookstore/scripts/showPassword.js" defer></script>
 </head>
     <body>
     <nav>
@@ -83,13 +72,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 alt="logo"
                 />
             </li>
-            <li><a href="http://localhost:3000/index.php"><h2>Pandieño Bookstore</h2></a></li>
+            <li><a href="http://192.168.8.113/pandieno_bookstore/index.php"><h2>Pandieño Bookstore</h2></a></li>
             <li><h3>|&nbsp Log In</h3></li>
             </ul>
         </div>
         <div class="right-nav">
             <ul>
-            <li><a href="http://localhost:3000/php/signup.php">Sign up</a></li>
+            <li><a href="http://192.168.8.113/pandieno_bookstore/php/signup.php">Sign up</a></li>
             </ul>
         </div>
         </div>
@@ -110,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php echo $error; ?>
                     </div>
                 <?php endif; ?>
-                <form action="http://localhost:3000/php/login.php" method="POST">
+                <form action="http://192.168.8.113/pandieno_bookstore/php/login.php" method="POST">
                     <label class= "rc-label" for="email">Email</label><br>
                     <input type="email" id="email" name="email" required><br><br>
                     <label class= "rc-label" for="password">Password</label><br>

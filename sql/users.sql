@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 02, 2024 at 12:57 PM
+-- Generation Time: Nov 20, 2024 at 08:58 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -48,7 +48,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `password`, `email`, `first_name`, `middle_name`, `last_name`, `gender`, `birthday`, `cart_id`, `status`, `date_created`, `address_id`) VALUES
-(1, 'Izyne123', '$2y$10$kxJRSdk60d6JDgHSa9dP/OAKD1KBPpplHb6ZGjPAN9IwrAvwC9xtu', 'izynehowiegallardo@gmail.com', 'Izyne', 'Sernicula', 'Gallardo', 'male', '2003-06-10', 1, 'active', '2024-11-02 10:14:23', 1);
+(1, 'Izyne123', '$2y$10$kxJRSdk60d6JDgHSa9dP/OAKD1KBPpplHb6ZGjPAN9IwrAvwC9xtu', 'izynehowiegallardo@gmail.com', 'Izyne', 'Sernicula', 'Gallardo', 'male', '2003-06-10', 1, 'inactive', '2024-11-02 10:14:23', 1),
+(2, 'User', '$2y$10$Jg.64wwrfW9Sz2Vf1I6AdumEhVyepss4KgrWVxGcqlMY1Che002PO', 'user@test.com', 'First', 'Middle', 'Last', 'other', '2024-11-20', 2, 'inactive', '2024-11-20 05:52:44', 2),
+(3, 'Test123', '$2y$10$FK.9pWkinLcdDSfP7eu3X.lswi2EiypDCNqVjsjW/BQAHOtU3tm3u', 'test@test.com', 'Test', 'MIddle', 'Last', 'male', '2024-11-07', 3, 'inactive', '2024-11-20 07:17:48', 3);
 
 --
 -- Indexes for dumped tables
@@ -72,7 +74,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
