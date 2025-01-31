@@ -72,6 +72,7 @@ if ($currentUser) {
     <title>Shopping Cart</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728904749/logo_vccjhc.ico" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/main.css" />
     <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/shoppingcart.css" />
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet"/>
