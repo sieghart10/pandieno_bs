@@ -99,9 +99,9 @@ try {
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet" /><!--font IM Fell DW Pica SC-->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" /><!--font inter -->
     <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet"><!--im fell eng-->
-    <link rel="stylesheet" href="http://<?php echo htmlspecialchars($serverIP); ?>/css/mainpage.css" />
-    <link rel="stylesheet" type="text/css" href="http://<?php echo htmlspecialchars($serverIP); ?>/css/main.css" />
-    <!-- <script type="module" src="http://<?php echo htmlspecialchars($serverIP); ?>/scripts/script.js" defer></script> -->
+    <link rel="stylesheet" href="./css/mainpage.css" />
+    <link rel="stylesheet" type="text/css" href="./css/main.css" />
+    <!-- <script type="module" src="../pandieno_bookstore/scripts/script.js" defer></script> -->
     <script>
         function submitForm() {
             document.getElementById('filter-form').submit();
@@ -134,21 +134,21 @@ try {
                     </li>
                     <li class="cart">
                         <?php if (isset($_SESSION['user_id'])): ?>
-                            <a href="http://<?php echo htmlspecialchars($serverIP); ?>/php/shoppingcart.php">
+                            <a href="../pandieno_bookstore/php/shoppingcart.php">
                                 <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
                                 <?php if ($cartItemCount > 0): ?>
                                     <span class="cart-count"><?php echo $cartItemCount; ?></span>
                                 <?php endif; ?>
                             </a>
                         <?php else: ?>
-                            <a href="http://<?php echo htmlspecialchars($serverIP); ?>/php/login.php">
+                            <a href="../pandieno_bookstore/php/login.php">   
                                 <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
                             </a>
                         <?php endif; ?>
                     </li>
                     <li>
                         <?php if (!isset($_SESSION['user_id'])): // Check if user is logged out ?>
-                            <a href="http://<?php echo htmlspecialchars($serverIP); ?>/php/login.php">Log in</a> | <a href="http://<?php echo htmlspecialchars($serverIP); ?>/php/signup.php">Sign up</a>
+                            <a href="../pandieno_bookstore/php/login.php">Log in</a> | <a href="../pandieno_bookstore/php/signup.php">Sign up</a>
                         <?php else: ?>
                             <div class="username-profile">
                                 <span><?php echo htmlspecialchars($currentUser['username']); ?></span>
@@ -204,15 +204,15 @@ try {
             <div>
                 <ul>
                     <li>
-                        <span><a href="http://<?php echo htmlspecialchars($serverIP); ?>/php/filter_page.php?filter=top_rated">Top Rated</a></span>
+                        <span><a href="../pandieno_bookstore/php/filter_page.php?filter=top_rated">Top Rated</a></span>
                     </li>
                     <li>
                         <span> | </span>
-                        <span><a href="http://<?php echo htmlspecialchars($serverIP); ?>/php/filter_page.php?filter=latest">Latest</a></span>
+                        <span><a href="../pandieno_bookstore/php/filter_page.php?filter=latest">Latest</a></span>
                     </li>
                     <li>
                         <span> | </span>
-                        <span><a href="http://<?php echo htmlspecialchars($serverIP); ?>/php/filter_page.php?filter=top_sales">Top Sales</a></span>
+                        <span><a href="../pandieno_bookstore/php/filter_page.php?filter=top_sales">Top Sales</a></span>
                     </li>
                 </ul>
             </div>
@@ -233,7 +233,7 @@ try {
                 <?php else: ?>
                     <?php foreach ($books as $book): ?>
                         <div class="book-item">
-                            <a href="http://<?php echo htmlspecialchars($serverIP); ?>/php/item_page.php?book_id=<?php echo $book['book_id']; ?>">
+                            <a href="../pandieno_bookstore/php/item_page.php?book_id=<?php echo $book['book_id']; ?>">
                                 <img src="<?php echo htmlspecialchars($book['cover_image']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>">
                                 <p><?php echo htmlspecialchars($book['title']); ?></p>
                             </a>
