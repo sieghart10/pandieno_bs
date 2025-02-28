@@ -1,6 +1,23 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 include '../db.php';
+
+$envFile = __DIR__ . '/../.env';
+if (file_exists($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) continue; // Ignore comments
+        list($key, $value) = explode('=', $line, 2);
+        putenv("$key=$value");
+        $_ENV[$key] = $value;
+    }
+}
+
+$serverIP = $_ENV['SERVER_IP'] ?? '127.0.0.1';
+
+$pdo = getReadConnection();
 
 try {
     $stmt = $pdo->query("SELECT * FROM books");
@@ -20,9 +37,9 @@ try {
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/main.css" />
-    <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/admin.css" />
-    <!-- <script type="module" src="script.js"></script> -->
+    <link rel="stylesheet" type="text/css" href="http://<?php echo $serverIP; ?>/pandieno_bookstore/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="http://<?php echo $serverIP; ?>/pandieno_bookstore/css/admin.css" />
+    <!-- <script type="module" src="http://<?php echo $serverIP; ?>/pandieno_bookstore/script.js"></script> -->
 </head>
 <body>
     <nav>
@@ -30,12 +47,12 @@ try {
             <div class="left-nav">
                 <ul>
                     <li>
-                    <a href="http://localhost:3000/index.php">
+                    <a href="http://<?php echo $serverIP; ?>/pandieno_bookstore/index.php">
                         <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1727950923/edcd0988-0c42-466e-b5fd-76660fe9afeb_ktknm8-removebg-preview_mmikc5.png" alt="logo">
                     </a>
                     </li>
                     <li>
-                        <a href="http://localhost:3000/index.php"><h2>Pandieño Bookstore</h2></a>
+                        <a href="http://<?php echo $serverIP; ?>/pandieno_bookstore/index.php"><h2>Pandieño Bookstore</h2></a>
                     </li>
                     <li><h3>|&nbsp&nbspInventory</h3></li>
                 </ul>
@@ -43,7 +60,7 @@ try {
             <div class="right-nav">
                 <ul>
                     <li>
-                        <a href="http://localhost:3000/php/admin_logout.php">Logout</a>
+                        <a href="http://<?php echo $serverIP; ?>/pandieno_bookstore/php/admin_logout.php">Logout</a>
                     </li>
                 </ul>
             </div>

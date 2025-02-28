@@ -1,7 +1,26 @@
+
 <!-- shoppingcart.php -->
 <?php
-session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include '../db.php';
+session_start();
+
+$envFile = __DIR__ . '/../.env';
+if (file_exists($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) continue; // Ignore comments
+        list($key, $value) = explode('=', $line, 2);
+        putenv("$key=$value");
+        $_ENV[$key] = $value;
+    }
+}
+
+$serverIP = $_ENV['SERVER_IP'] ?? '127.0.0.1';
+
+$pdo = getReadConnection();
 
 $currentUser = null;
 if (isset($_SESSION['user_id'])) {
@@ -10,7 +29,7 @@ if (isset($_SESSION['user_id'])) {
     $stmt->execute();
     $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
 } else {
-    header('Location: login.php');
+    header("Location: http://$serverIP/pandieno_bookstore/php/login.php");
     exit;
 }
 
@@ -73,13 +92,13 @@ if ($currentUser) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728904749/logo_vccjhc.ico" type="image/x-icon">
-    <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/main.css" />
-    <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/shoppingcart.css" />
+    <link rel="stylesheet" type="text/css" href="http://<?php echo $serverIP; ?>/pandieno_bookstore/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="http://<?php echo $serverIP; ?>/pandieno_bookstore/css/shoppingcart.css" />
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet">
-    <script src="http://localhost:3000/scripts/quantity.js" defer></script>
-    <script src="http://localhost:3000/scripts/checkout.js" defer></script>
+    <script src="http://<?php echo $serverIP; ?>/pandieno_bookstore/scripts/quantity.js" defer></script>
+    <script src="http://<?php echo $serverIP; ?>/pandieno_bookstore/scripts/checkout.js" defer></script>
 </head>
 <body>
     <nav>
@@ -87,12 +106,12 @@ if ($currentUser) {
             <div class="left-nav">
                 <ul>
                     <li>
-                        <a href="http://localhost:3000/index.php">
+                        <a href="http://<?php echo htmlspecialchars($serverIP, ENT_QUOTES, 'UTF-8'); ?>/pandieno_bookstore/index.php">
                             <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1727950923/edcd0988-0c42-466e-b5fd-76660fe9afeb_ktknm8-removebg-preview_mmikc5.png" alt="logo">
                         </a>
                     </li>
                     <li>
-                        <a href="http://localhost:3000/index.php"><h2>Pandieño Bookstore</h2></a>
+                        <a href="http://<?php echo htmlspecialchars($serverIP, ENT_QUOTES, 'UTF-8'); ?>/pandieno_bookstore/index.php"><h2>Pandieño Bookstore</h2></a>
                     </li>
                 </ul>
             </div>
@@ -107,7 +126,7 @@ if ($currentUser) {
                         </form>
                     </li>
                     <li class="cart">
-                        <a href="http://localhost:3000/php/shoppingcart.php">
+                        <a href="http://<?php echo htmlspecialchars($serverIP, ENT_QUOTES, 'UTF-8'); ?>/pandieno_bookstore/php/shoppingcart.php">
                             <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
                             <?php if ($cartItemCount > 0): ?>
                                 <span class="cart-count"><?php echo $cartItemCount; ?></span>
@@ -116,7 +135,7 @@ if ($currentUser) {
                     </li>
                     <li>
                         <?php if (!isset($_SESSION['user_id'])): ?>
-                            <a href="http://localhost:3000/php/login.php">Log in</a> | <a href="http://localhost:3000/php/signup.php">Sign up</a>
+                            <a href="http://<?php echo htmlspecialchars($serverIP, ENT_QUOTES, 'UTF-8'); ?>/pandieno_bookstore/php/login.php">Log in</a> | <a href="http://<?php echo htmlspecialchars($serverIP, ENT_QUOTES, 'UTF-8'); ?>/pandieno_bookstore/php/signup.php">Sign up</a>
                         <?php else: ?>
                             <div class="username-profile">
                                 <span><?php echo htmlspecialchars($currentUser['username']); ?></span>

@@ -4,6 +4,8 @@ header('Content-Type: application/json');
 
 include '../db.php';
 
+$pdo = getReadConnection();
+
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'User not logged in.']);
     exit();

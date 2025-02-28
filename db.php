@@ -1,7 +1,15 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+require_once __DIR__ . '/vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 class DatabaseConnection {
     private static $master_instance = null;
     private static $slave_instance = null;
+    private static $master_priority = false;
     private $pdo;
 
     private function __construct($host, $dbname, $user, $pass) {
@@ -13,22 +21,27 @@ class DatabaseConnection {
                 PDO::ATTR_EMULATE_PREPARES => false,
                 PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
             ];
-            
             $this->pdo = new PDO($dsn, $user, $pass, $options);
         } catch (PDOException $e) {
-            // Log the error details
             error_log("Database Connection Error: " . $e->getMessage());
             throw new Exception("Database connection failed. Please try again later.");
         }
     }
 
+    public static function enableMasterPriority() {
+        self::$master_priority = true;
+    }
+
+    public static function disableMasterPriority() {
+        self::$master_priority = false;
+    }
+
     public static function getMaster() {
         if (self::$master_instance === null) {
-            $host = getenv('DB_MASTER_HOST') ?: '192.168.8.109';
-            $dbname = getenv('DB_NAME') ?: 'pandieno_bookstore';
-            $user = getenv('DB_USER') ?: 'pandieno_user';
-            $pass = getenv('DB_PASS') ?: '2109';
-            
+            $host = $_ENV['DB_MASTER_HOST'];
+            $dbname = $_ENV['DB_NAME'];
+            $user = $_ENV['DB_USER'];
+            $pass = $_ENV['DB_PASS'];
             self::$master_instance = new DatabaseConnection($host, $dbname, $user, $pass);
         }
         return self::$master_instance->pdo;
@@ -36,11 +49,10 @@ class DatabaseConnection {
 
     public static function getSlave() {
         if (self::$slave_instance === null) {
-            $host = getenv('DB_SLAVE_HOST') ?: '192.168.8.110';
-            $dbname = getenv('DB_NAME') ?: 'pandieno_bookstore';
-            $user = getenv('DB_USER') ?: 'pandieno_user';
-            $pass = getenv('DB_PASS') ?: '2109';  // Use the same password as master
-            
+            $host = $_ENV['DB_SLAVE_HOST'];
+            $dbname = $_ENV['DB_NAME'];
+            $user = $_ENV['DB_USER'];
+            $pass = $_ENV['DB_PASS'];
             self::$slave_instance = new DatabaseConnection($host, $dbname, $user, $pass);
         }
         return self::$slave_instance->pdo;
@@ -48,23 +60,31 @@ class DatabaseConnection {
 
     public static function getConnection($isWrite = false) {
         try {
-            return $isWrite ? self::getMaster() : self::getSlave();
-        } catch (Exception $e) {
-            // If slave fails, fallback to master
-            if (!$isWrite) {
+      	    if (!$isWrite && !self::$master_priority) {
                 try {
-                    return self::getMaster();
+                    return self::getSlave();
                 } catch (Exception $e) {
-                    error_log("Both master and slave connections failed: " . $e->getMessage());
-                    throw $e;
+                    error_log("Slave connection failed, falling back to master: " . $e->getMessage());
+                    return self::getMaster();
                 }
             }
+            try {
+                return self::getMaster();
+            } catch (Exception $e) {
+                if (!$isWrite) {
+                    error_log("Master connection failed, attempting slave: " . $e->getMessage());
+                    return self::getSlave();
+                }
+                throw $e;
+            }
+        } catch (Exception $e) {
+            error_log("All database connections failed: " . $e->getMessage());
             throw $e;
         }
     }
+
 }
 
-// Helper functions for backward compatibility
 function getReadConnection() {
     return DatabaseConnection::getConnection(false);
 }
@@ -74,5 +94,5 @@ function getWriteConnection() {
 }
 
 function getConnection() {
-    return getReadConnection();
+    return DatabaseConnection::getConnection(false);
 }

@@ -1,6 +1,23 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 include '../db.php';
+
+$envFile = __DIR__ . '/../.env';
+if (file_exists($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) continue;
+        list($key, $value) = explode('=', $line, 2);
+        putenv("$key=$value");
+        $_ENV[$key] = $value;
+    }
+}
+
+$serverIP = $_ENV['SERVER_IP'] ?? '127.0.0.1';
+
+$pdo = getReadConnection();
 
 $currentUser = null;
 $cartItemCount = 0;
@@ -28,12 +45,12 @@ if (isset($_GET['book_id'])) {
 
     $stmt = $pdo->prepare("
     SELECT 
-        title, author, category, publish_date, price, description, quantity, cover_image,
-        (SELECT AVG(rating) FROM reviews WHERE book_id = :book_id) AS average_rating
+    	title, author, category, publish_date, price, description, quantity, cover_image,
+    	(SELECT AVG(rating) FROM reviews WHERE book_id = b.book_id) AS average_rating
     FROM 
-        books 
+    	books b
     WHERE 
-        book_id = :book_id
+    	b.book_id = :book_id
     ");
     $stmt->bindParam(':book_id', $book_id, PDO::PARAM_INT);
     $stmt->execute();
@@ -64,7 +81,7 @@ if (isset($_GET['book_id'])) {
     $stmt_others->execute();
     $otherBooks = $stmt_others->fetchAll(PDO::FETCH_ASSOC);
 } else {
-    header('Location: http://localhost:3000/index.php');
+    header('Location: http://$serverIP/pandieno_bookstore/index.php');
     exit;
 }
 ?>
@@ -78,9 +95,9 @@ if (isset($_GET['book_id'])) {
     <link rel="icon" href="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728904749/logo_vccjhc.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="http://localhost:3000/css/main.css" />
-    <link rel="stylesheet" href="http://localhost:3000/css/item_page.css" />
-    <script src="http://localhost:3000/scripts/addToCart.js" defer></script>
+    <link rel="stylesheet" href="http://<?php echo $serverIP; ?>/pandieno_bookstore/css/main.css" />
+    <link rel="stylesheet" href="http://<?php echo $serverIP; ?>/pandieno_bookstore/css/item_page.css" />
+    <script src="http://<?php echo $serverIP; ?>/pandieno_bookstore/scripts/addToCart.js"></script>
 </head>
 <body>
     <nav>
@@ -88,31 +105,31 @@ if (isset($_GET['book_id'])) {
             <div class="left-nav">
                 <ul>
                     <li>
-                      <a href="http://localhost:3000/index.php">
+                      <a href="http://<?php echo htmlspecialchars($serverIP, ENT_QUOTES, 'UTF-8'); ?>/pandieno_bookstore/index.php">
                         <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1727950923/edcd0988-0c42-466e-b5fd-76660fe9afeb_ktknm8-removebg-preview_mmikc5.png" alt="logo">
                       </a>
                     </li>
                     <li>
-                        <a href="http://localhost:3000/index.php"><h2>Pandieño Bookstore</h2></a>
+                        <a href="http://<?php echo htmlspecialchars($serverIP, ENT_QUOTES, 'UTF-8'); ?>/pandieno_bookstore/index.php"><h2>Pandieño Bookstore</h2></a>
                     </li>
                 </ul>
             </div>
             <div class="right-nav">
                 <ul>
                     <li>
-                        <form method="GET" action="http://localhost:3000/index.php">
+                        <form method="GET" action="http://<?php echo $serverIP; ?>/pandieno_bookstore/index.php">
                             <input type="text" name="search" placeholder="Search item..." class="search-bar">
                             <button type="submit">Search</button>
                         </form>
                     </li>
                     <li class="cart">
-                        <a href="http://localhost:3000/php/shoppingcart.php">
+                        <a href="http://<?php echo $serverIP; ?>/pandieno_bookstore/php/shoppingcart.php">
                             <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1728372447/shopping-cart_1_v3hyar.png" alt="cart">
                             <span class="cart-count" style="display: none;"></span> <!-- Initially hidden -->
                         </a>
                     </li>
                         <?php if (!isset($_SESSION['user_id'])): ?>
-                            <a href="http://localhost:3000/php/login.php">Log in</a> | <a href="http://localhost:3000/php/signup.php">Sign up</a>
+                            <a href="http://<?php echo $serverIP; ?>/pandieno_bookstore/php/login.php">Log in</a> | <a href="http://localhost:3000/php/signup.php">Sign up</a>
                         <?php else: ?>
                             <div class="username-profile">
                                 <span><?php echo htmlspecialchars($currentUser['username']); ?></span>
@@ -154,9 +171,9 @@ if (isset($_GET['book_id'])) {
           <div class="ratings">
               <p>Ratings: <?php echo htmlspecialchars($averageRating); ?> / 5 ★</p>
               <?php if (isset($_SESSION['user_id'])): ?>
-                  <a href="http://localhost:3000/php/review_page.php?book_id=<?php echo $book_id; ?>">Reviews</a>
+                  <a href="http://<?php echo $serverIP; ?>/pandieno_bookstore/php/review_page.php?book_id=<?php echo $book_id; ?>">Reviews</a>
               <?php else: ?>
-                  <a href="http://localhost:3000/php/login.php">Reviews</a>
+                  <a href="http://<?php echo $serverIP; ?>/pandieno_bookstore/php/login.php">Reviews</a>
               <?php endif; ?>
           </div>
         </div>
@@ -167,7 +184,7 @@ if (isset($_GET['book_id'])) {
         </div>
         <div class="store-details">
           <h3>Pandieño Bookstore</h3>
-          <a href="http://localhost:3000/html/about.html" class="view-shop">View Shop</a>
+          <a href="http://<?php echo $serverIP; ?>/pandieno_bookstore/html/about.html" class="view-shop">View Shop</a>
         </div>
       </section>
 
@@ -180,7 +197,7 @@ if (isset($_GET['book_id'])) {
             <?php else: ?>
                 <?php foreach ($relatedBooks as $related): ?>
                     <div class="book-item">
-                        <a href="http://localhost:3000/php/item_page.php?book_id=<?php echo $related['book_id']; ?>">
+                        <a href="http://<?php echo $serverIP; ?>/pandieno_bookstore/php/item_page.php?book_id=<?php echo $related['book_id']; ?>">
                             <img src="<?php echo htmlspecialchars($related['cover_image']); ?>" alt="<?php echo htmlspecialchars($related['title']); ?>">
                             <p><?php echo htmlspecialchars($related['title']); ?></p>
                         </a>
@@ -199,7 +216,7 @@ if (isset($_GET['book_id'])) {
             <?php else: ?>
                 <?php foreach ($otherBooks as $other): ?>
                     <div class="book-item">
-                        <a href="http://localhost:3000/php/item_page.php?book_id=<?php echo $other['book_id']; ?>">
+                        <a href="http://<?php echo $serverIP; ?>/pandieno_bookstore/php/item_page.php?book_id=<?php echo $other['book_id']; ?>">
                             <img src="<?php echo htmlspecialchars($other['cover_image']); ?>" alt="<?php echo htmlspecialchars($other['title']); ?>">
                             <p><?php echo htmlspecialchars($other['title']); ?></p>
                         </a>

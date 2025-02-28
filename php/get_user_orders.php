@@ -2,6 +2,8 @@
 session_start();
 include '../db.php';
 
+$pdo = getReadConnection();
+
 header('Content-Type: application/json');
 
 ob_clean();

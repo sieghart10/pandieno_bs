@@ -1,21 +1,38 @@
+// Environment configuration
 let cartCount = 0;
+let serverIP = '192.168.8.108'; // Default value
+
+// Load environment variables (this should be in your PHP file)
+// Note: JavaScript cannot directly read .env files in the browser
+// You should expose this through your PHP API or environment configuration
 
 function fetchCartCount() {
-    fetch('http://localhost:3000/php/get_cart_count.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                cartCount = parseInt(data.count, 10);
-                updateCartCountDisplay();
-            } else {
-                console.error('Failed to fetch cart count.');
-                updateCartCountDisplay();
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching cart count:', error);
+    // Use the correct path based on your server configuration
+    fetch(`http://${serverIP}/pandieno_bookstore/php/get_cart_count.php`, {
+        credentials: 'include', // Include cookies if using sessions
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            cartCount = parseInt(data.count, 10);
             updateCartCountDisplay();
-        });
+        } else {
+            console.error('Failed to fetch cart count:', data.message);
+            updateCartCountDisplay();
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching cart count:', error);
+        updateCartCountDisplay();
+    });
 }
 
 function updateCartCountDisplay() {
@@ -26,42 +43,47 @@ function updateCartCountDisplay() {
     }
 }
 
-window.onload = fetchCartCount;
+function addToCart(bookId) {
+    const quantity = document.getElementById('quantity')?.value || 1;
 
-function addToCart(bookId) { 
-    console.log("Book added to cart:", bookId);
-    const quantity = document.getElementById('quantity').value;
-
-    fetch('http://localhost:3000/php/add_to_cart.php', {
+    fetch(`http://${serverIP}/pandieno_bookstore/php/add_to_cart.php`, {
         method: 'POST',
+        credentials: 'include', // Include cookies if using sessions
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
         },
         body: JSON.stringify({
             book_id: bookId,
-            quantity: quantity
+            quantity: parseInt(quantity, 10)
         })
     })
-    .then(response => response.text())
-    .then(data => {
-        console.log('Raw Response:', data);
-        return JSON.parse(data);
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
     })
     .then(data => {
         if (data.success) {
-            cartCount += parseInt(quantity);
+            cartCount += parseInt(quantity, 10);
             updateCartCountDisplay();
+            alert('Book added to cart successfully!');
         } else {
-            alert(data.message);
+            alert(data.message || 'Failed to add book to cart');
         }
     })
     .catch(error => {
         console.error('Error:', error);
+        alert('Failed to add book to cart. Please try again.');
     });
 }
 
 function redirectToCheckout(bookId) {
-    const quantity = document.getElementById('quantity').value;
-    const url = `http://localhost:3000/php/checkout.php?book_id=${bookId}&quantity=${quantity}`;
+    const quantity = document.getElementById('quantity')?.value || 1;
+    const url = `http://${serverIP}/pandieno_bookstore/php/checkout.php?book_id=${encodeURIComponent(bookId)}&quantity=${encodeURIComponent(quantity)}`;
     window.location.href = url;
 }
+
+// Initialize cart count when page loads
+window.addEventListener('load', fetchCartCount);

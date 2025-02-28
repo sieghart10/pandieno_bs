@@ -3,6 +3,21 @@ session_start();
 include '../db.php'; // Database connection
 include '../cloudinary_config.php';
 
+$envFile = __DIR__ . '/../.env';
+if (file_exists($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) continue; // Ignore comments
+        list($key, $value) = explode('=', $line, 2);
+        putenv("$key=$value");
+        $_ENV[$key] = $value;
+    }
+}
+
+$serverIP = $_ENV['SERVER_IP'] ?? '127.0.0.1';
+
+$pdo = getReadConnection();
+
 // Get the ENUM values for categories
 $stmt = $pdo->prepare("SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME = 'books' AND COLUMN_NAME = 'category'");
 $stmt->execute();
@@ -92,11 +107,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $book = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$book) {
-        header("Location: admin_dashboard.php");
+        header("Location: http://$serverIP/pandieno_bookstore/php/admin_dashboard.php");
         exit();
     }
 } else {
-    header("Location: admin_dashboard.php");
+    header("Location: http://$serverIP/pandieno_bookstore/php/admin_dashboard.php");
     exit();
 }
 ?>
@@ -113,9 +128,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=IM+FELL+English&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/main.css" />
-    <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/edit_book.css" />
-    <script src="http://localhost:3000/scripts/previewImage.js" defer></script>
+    <link rel="stylesheet" type="text/css" href="http://<?php echo $serverIP; ?>/pandieno_bookstore/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="http://<?php echo $serverIP; ?>/pandieno_bookstore/css/edit_book.css" />
+    <script src="http://<?php echo $serverIP; ?>/pandieno_bookstore/scripts/previewImage.js" defer></script>
 </head>
 <body>
 <nav>
@@ -123,12 +138,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="left-nav">
                 <ul>
                     <li>
-                    <a href="http://localhost:3000/index.php">
+                    <a href="http://<?php echo $serverIP; ?>/pandieno_bookstore/index.php">
                         <img src="https://res.cloudinary.com/dvr0evn7t/image/upload/v1727950923/edcd0988-0c42-466e-b5fd-76660fe9afeb_ktknm8-removebg-preview_mmikc5.png" alt="logo">
                     </a>
                     </li>
                     <li>
-                        <a href="http://localhost:3000/index.php"><h2>Pandieño Bookstore</h2></a>
+                        <a href="http://<?php echo $serverIP; ?>/pandieno_bookstore/index.php"><h2>Pandieño Bookstore</h2></a>
                     </li>
                     <li><h3>|&nbsp&nbspInventory</h3></li>
                 </ul>
@@ -136,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="right-nav">
                 <ul>
                     <li>
-                        <a href="http://localhost:3000/php/admin_dashboard.php">Dashboard</a>
+                        <a href="http://<?php echo $serverIP; ?>/pandieno_bookstore/php/admin_dashboard.php">Dashboard</a>
                     </li>
                 </ul>
             </div>
